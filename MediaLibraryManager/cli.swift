@@ -7,7 +7,7 @@
 //  Copyright © 2018 Paul Crane. All rights reserved.
 //
 import Foundation
-
+/*
 /// The list of exceptions that can be thrown by the CLI command handlers
 enum MMCliError: Error {
     
@@ -27,10 +27,11 @@ enum MMCliError: Error {
     
     /// Thrown if there is no command given
     case noCommand
-    
     // feel free to add more errors as you need them
 }
+ */
 
+/*
 /// Generate a friendly prompt and wait for the user to enter a line of input
 /// - parameter prompt: The prompt to use
 /// - parameter strippingNewline: Strip the newline from the end of the line of
@@ -43,7 +44,8 @@ func prompt(_ prompt: String, strippingNewline: Bool = true) -> String? {
     print(prompt, terminator:"")
     return readLine(strippingNewline: strippingNewline)
 }
-
+*/
+/*
 /// This class representes a set of results.
 class MMResultSet{
     
@@ -78,8 +80,9 @@ class MMResultSet{
     func hasResults() -> Bool{
         return self.results.count > 0
     }
-}
+}*/
 
+/*
 /// The interface for the command handler.
 protocol MMCommandHandler{
     
@@ -134,3 +137,4 @@ class UnimplementedCommandHandler: MMCommandHandler{
         throw MMCliError.unimplementedCommand
     }
 }
+ */

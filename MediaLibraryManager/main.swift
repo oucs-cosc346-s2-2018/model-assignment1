@@ -32,38 +32,46 @@ var last = MMResultSet()
 //
 // Feel free to extend these commands/errors as you need to.
 while let line = prompt("> "){
-    var command : String = ""
+    var commandString : String = ""
     var parts = line.split(separator: " ").map({String($0)})
+    var command: MMCommand
     
     do{
         guard parts.count > 0 else {
             throw MMCliError.noCommand
         }
-        command = parts.removeFirst();
-        switch(command){
+        
+        commandString = parts.removeFirst();
+        
+        switch(commandString){
         case "load", "list", "add", "set", "del", "save-search", "save":
-            last = try UnimplementedCommandHandler.handle(parts, last:last)
+            command = UnimplementedCommand()
             break
         case "help":
-            last = try HelpCommandHandler.handle(parts, last:last)
+            command = HelpCommand()
             break
         case "quit":
-            last = try QuitCommandHandler.handle(parts, last:last)
-            // so we don't show the results of the previous command
-            // (before the quit), we'll continue here instead of breaking
-            continue
+            command = QuitCommand()
+            break
         default:
             throw MMCliError.unknownCommand
         }
-        last.showResults();
+        // try execute the command and catch any thrown errors below
+        try command.execute()
+        
+        // if there are any results from the command, print them out here
+        if let results = command.results {
+            results.show()
+            last = results
+        }
     }catch MMCliError.noCommand {
         print("No command given -- see \"help\" for details.")
     }catch MMCliError.unknownCommand {
-        print("Command \"\(command)\" not found -- see \"help\" for details.")
+        print("Command \"\(commandString)\" not found -- see \"help\" for details.")
     }catch MMCliError.invalidParameters {
-        print("Invalid parameters for \"\(command)\" -- see \"help\" for details.")
+        print("Invalid parameters for \"\(commandString)\" -- see \"help\" for details.")
     }catch MMCliError.unimplementedCommand {
-        print("The \"\(command)\" command is not implemented.")
+        print("The \"\(commandString)\" command is not implemented.")
     }catch MMCliError.missingResultSet {
         print("No previous results to work from.")
     }
