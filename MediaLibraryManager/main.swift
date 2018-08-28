@@ -44,7 +44,10 @@ while let line = prompt("> "){
         commandString = parts.removeFirst();
         
         switch(commandString){
-        case "load", "list", "add", "set", "del", "save-search", "save":
+        case "load":
+            command = LoadCommand(paths: parts)
+            break
+         case "list", "add", "set", "del", "save-search", "save":
             command = UnimplementedCommand()
             break
         case "help":

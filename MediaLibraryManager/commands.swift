@@ -164,3 +164,17 @@ class QuitCommand : MMCommand{
         exit(0)
     }
 }
+
+
+class LoadCommand : MMCommand{
+    var results: MMResultSet? = nil
+    var paths: [String]
+    
+    init(paths: [String]){
+        self.paths = paths
+    }
+    
+    func execute() throws{
+        throw MMCliError.unimplementedCommand
+    }
+}
