@@ -1,0 +1,7 @@
+[{
+	"fullpath": "/path/to/foobar.ext",
+	"type": "document",
+	"metadata": {
+		"creator" : "Paul"
+	}
+}]
