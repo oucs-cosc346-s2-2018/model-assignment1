@@ -16,7 +16,7 @@ import XCTest
 
 // some other tests that should be performed:
 //
-// 4. load invalid JSON
+// 4. load invalid JSON (to make sure the importer is handling things properly)
 // 5. load a file owned by someone else
 
 class LoadTests: XCTestCase {
@@ -27,18 +27,51 @@ class LoadTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        // we're going to create a new JSON file here as a string to use
-        // for testing.
+        let jsonString: String = """
+[
+    {
+        "fullpath": "/path/to/foobar.ext",
+        "type": "document",
+        "metadata": {
+            "creator" : "Paul"
+        }
+    }
+]
+"""
         
-        // we'll put it in each of the different places in the filesystem
-        // and then load them in the different functions below.
-        
-        // we'll use a single entry in the JSON document to illustrate that
-        // we *can* read data.
-        let jsonString: String = "[{\"fullpath\": \"/path/to/foobar.ext\", \"type\": \"document\", \"metadata\": {\"creator\" : \"Paul\"}}]"
-        
-        let allTypesString: String = "[{\"fullpath\": \"/path/to/document.ext\", \"type\": \"document\", \"metadata\": {\"creator\" : \"Paul\"}},{\"fullpath\": \"/path/to/image.ext\", \"type\": \"image\", \"metadata\": {\"creator\" : \"Paul\"}},{\"fullpath\": \"/path/to/video.ext\", \"type\": \"video\", \"metadata\": {\"creator\" : \"Paul\"}},{\"fullpath\": \"/path/to/audio.ext\", \"type\": \"audio\", \"metadata\": {\"creator\" : \"Paul\"}}]"
-        
+        let allTypesString: String = """
+[
+    {
+        "fullpath": "/path/to/document.ext",
+        "type": "document",
+        "metadata": {
+            "creator" : "Paul"
+        }
+    },{
+        "fullpath": "/path/to/image.ext",
+        "type": "image",
+        "metadata": {
+            "creator" : "Paul",
+            "resolution": "1024x768"
+        }
+    },{
+        "fullpath": "/path/to/video.ext",
+        "type": "video",
+        "metadata": {
+            "creator" : "Paul",
+            "resolution": "1024x768",
+            "runtime": "3mins"
+        }
+    },{
+        "fullpath": "/path/to/audio.ext",
+        "type": "audio",
+        "metadata": {
+            "creator" : "Paul",
+            "runtime": "3mins"
+        }
+    }
+]
+"""     
         var home = FileManager.default.homeDirectoryForCurrentUser
         home.appendPathComponent(filename)
         
@@ -54,7 +87,7 @@ class LoadTests: XCTestCase {
             try allTypesString.write(to: alltypes, atomically: true, encoding: String.Encoding.utf8)
         } catch {
             // failed to write file – bad permissions, bad filename, missing permissions, or more likely it can't be converted to the encoding
-            print("\(error)")
+            XCTFail("something went wrong writing files ... \(error)")
         }
     }
     
@@ -74,8 +107,7 @@ class LoadTests: XCTestCase {
             try FileManager.default.removeItem(at: current)
             try FileManager.default.removeItem(at: alltypes)
         }catch{
-            print("something went wrong removing files ... ")
-            print("\(error)")
+            XCTFail("something went wrong removing files ... \(error)")
         }
         super.tearDown()
     }
@@ -87,9 +119,9 @@ class LoadTests: XCTestCase {
         let loader = Importer()
         do{
             let result = try loader.read(filename: current.path)
-            assert(result.count > 0, "Expected to read *some* data")
+            XCTAssert(result.count > 0, "Expected to read *some* data")
         }catch{
-            assert(true == false, "Generated un expected exception")
+            XCTFail("Generated un expected exception")
         }
     }
     
@@ -97,9 +129,9 @@ class LoadTests: XCTestCase {
         let loader = Importer()
         do{
             let result = try loader.read(filename: "./" + filename)
-            assert(result.count > 0, "Expected to read *some* data")
+            XCTAssert(result.count > 0, "Expected to read *some* data")
         }catch{
-            assert(true == false, "Generated un expected exception")
+            XCTFail("Generated un expected exception")
         }
     }
     
@@ -107,9 +139,9 @@ class LoadTests: XCTestCase {
         let loader = Importer()
         do{
             let result = try loader.read(filename: "~/" + filename)
-            assert(result.count > 0, "Expected to read *some* data")
+            XCTAssert(result.count > 0, "Expected to read *some* data")
         }catch{
-            assert(true == false, "Generated un expected exception")
+            XCTFail("Generated un expected exception")
         }
     }
     
@@ -118,9 +150,9 @@ class LoadTests: XCTestCase {
         do{
             let result = try loader.read(filename: alltypesFilename)
             
-            assert(result.count > 0, "Expected to read *some* data")
-            assert(!(result.count < 4), "Too much data")
-            assert(!(result.count > 4), "Not enough data")
+            XCTAssert(result.count > 0, "Expected to read *some* data")
+            XCTAssert(!(result.count < 4), "Too much data")
+            XCTAssert(!(result.count > 4), "Not enough data")
             
             var counts: [String : Int] = ["document": 0,
                                           "image": 0,
@@ -137,15 +169,16 @@ class LoadTests: XCTestCase {
                 case is AudioFile.Type:
                     counts["audio"]? += 1
                 default:
-                    assert(false, "Unknown file type encountered...")
+                    XCTFail("Unknown file type encountered...")
                 }
             }
             
             for count in counts{
-                assert(count.value == 1, "too many \(count.key) items")
+                XCTAssert(count.value == 1, "too many \(count.key) items")
             }
+            
         }catch{
-            assert(true == false, "Generated un expected exception")
+            XCTFail("Generated un expected exception")
         }
     }
 }
