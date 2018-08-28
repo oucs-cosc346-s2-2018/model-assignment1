@@ -12,12 +12,21 @@ enum MMImportError: Error{
     case invalidFilePath
     case fileDoesntExist
     case badPermissions
-    case unknownFileType
+    case validationError(filename: String, errors: [MMValidationError])
+    case validationFailed(errors: [String: [MMValidationError]])
 }
 
-enum MMValidationError: Error{
-    case missingCreator
-}
+var documentValidator = ValidatorSuite(validators: [KeywordValidator(keyword: "creator")])
+
+var imageValidator = ValidatorSuite(validators: [KeywordValidator(keyword: "creator"),
+                                            KeywordValidator(keyword: "resolution")])
+
+var videoValidator = ValidatorSuite(validators: [KeywordValidator(keyword: "creator"),
+                                            KeywordValidator(keyword: "runtime"),
+                                            KeywordValidator(keyword: "resolution")])
+
+var audioValidator = ValidatorSuite(validators: [KeywordValidator(keyword: "creator"),
+                                            KeywordValidator(keyword: "runtime")])
 
 struct F: Codable{
     var fullpath: String
@@ -31,90 +40,47 @@ struct F: Codable{
         return (key, nil)
     }
     
-    
     func toFile() throws -> File{
-        // this doesn't handle validation particularly well
-        // we're using the above constructor for *all* the instances
-        // we don't yet do any validation
-        
-        // ideally we should do something like this:
-        // var file = try DocumentFile.validate(data: data)
+        var errors: [MMValidationError] = []
+        var metadata:[MMMetadata] = []
+        for md in self.metadata{
+            metadata.append(Metadata(keyword: md.key, value: md.value))
+        }
         
         switch(self.type){
         case "document":
-            return DocumentFile(data: self)
+            errors = documentValidator.validate(data: metadata)
+            if errors.count == 0{
+                let creator = metadata.first(where: {$0.keyword == "creator"})!
+                return DocumentFile(path: self.fullpath, filename: self.fullpath, metadata: metadata, creator: creator)
+            }
         case "image":
-            return ImageFile(data: self)
+            errors = imageValidator.validate(data: metadata)
+            if errors.count == 0{
+                let creator = metadata.first(where: {$0.keyword == "creator"})!
+                let resolution = metadata.first(where: {$0.keyword == "resolution"})!
+            
+                return ImageFile(path: self.fullpath, filename: self.fullpath, metadata: metadata, creator: creator, resolution: resolution)
+            }
         case "video":
-            return VideoFile(data: self)
+            errors = videoValidator.validate(data: metadata)
+            if errors.count == 0{
+                let creator = metadata.first(where: {$0.keyword == "creator"})!
+                let resolution = metadata.first(where: {$0.keyword == "resolution"})!
+                let runtime = metadata.first(where: {$0.keyword == "runtime"})!
+                return VideoFile(path: self.fullpath, filename: self.fullpath, metadata: metadata, creator: creator, resolution: resolution, runtime: runtime)
+            }
         case "audio":
-            return AudioFile(data: self)
+            errors = audioValidator.validate(data: metadata)
+            if errors.count == 0{
+                let creator = metadata.first(where: {$0.keyword == "creator"})!
+                let runtime = metadata.first(where: {$0.keyword == "runtime"})!
+                return AudioFile(path: self.fullpath, filename: self.fullpath, metadata: metadata, creator: creator, runtime: runtime)
+            }
         default:
-            throw MMImportError.unknownFileType
+            throw MMValidationError.unknownFileType
         }
-    }
-}
-
-// I'm placing this here so we don't pollute the File with the
-// JSON representation stuff as that's dependent on the file structure
-// (and this importing logic).
-
-// I also think that this would be better as a factory and creating the
-// specific instances of the classes...
-
-extension DocumentFile{
-    convenience init(data: F){
-        self.init()
-        
-        self.filename = data.fullpath
-        self.path = data.fullpath
-        self.metadata = []
-        
-        for md in data.metadata{
-            self.metadata.append(Metadata(keyword: md.key, value: md.value))
-        }
-    }
-}
-
-extension ImageFile{
-    convenience init(data: F){
-        self.init()
-        
-        self.filename = data.fullpath
-        self.path = data.fullpath
-        self.metadata = []
-        
-        for md in data.metadata{
-            self.metadata.append(Metadata(keyword: md.key, value: md.value))
-        }
-    }
-}
-
-extension VideoFile{
-    convenience init(data: F){
-        self.init()
-        
-        self.filename = data.fullpath
-        self.path = data.fullpath
-        self.metadata = []
-        
-        for md in data.metadata{
-            self.metadata.append(Metadata(keyword: md.key, value: md.value))
-        }
-    }
-}
-
-extension AudioFile{
-    convenience init(data: F){
-        self.init()
-        
-        self.filename = data.fullpath
-        self.path = data.fullpath
-        self.metadata = []
-        
-        for md in data.metadata{
-            self.metadata.append(Metadata(keyword: md.key, value: md.value))
-        }
+        throw MMImportError.validationError(filename: self.fullpath, errors: errors)
     }
 }
 
@@ -144,6 +110,8 @@ class Importer: MMFileImport{
     
     func read(filename: String) throws -> [MMFile] {
         var result: [MMFile] = []
+        var errors: [String: [MMValidationError]] = [:]
+        
         do{
             let path = try normalisePath(filename: filename)
             // check file exists
@@ -163,8 +131,8 @@ class Importer: MMFileImport{
             for file in media{
                 do{
                     try result.append(file.toFile())
-                } catch MMImportError.unknownFileType {
-                    print("unknown file type \"\(file.type)]\"")
+                } catch MMImportError.validationError(let fn, let errs){
+                    errors[fn] = errs
                 }
             }
         } catch MMImportError.badPermissions {
@@ -173,10 +141,12 @@ class Importer: MMFileImport{
             print("file doesn't exist [\(filename)]")
         } catch MMImportError.invalidFilePath {
             print("invalid file path[\(filename)]")
-        } catch {
-            print("Something went wrong with creating the paths...")
-            print("\(error)")
         }
+        
+        if errors.count > 0{
+            throw MMImportError.validationFailed(errors: errors)
+        }
+        
         return result
     }
 }
