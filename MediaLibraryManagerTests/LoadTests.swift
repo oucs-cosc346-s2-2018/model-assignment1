@@ -27,51 +27,6 @@ class LoadTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        let jsonString: String = """
-[
-    {
-        "fullpath": "/path/to/foobar.ext",
-        "type": "document",
-        "metadata": {
-            "creator" : "Paul"
-        }
-    }
-]
-"""
-        
-        let allTypesString: String = """
-[
-    {
-        "fullpath": "/path/to/document.ext",
-        "type": "document",
-        "metadata": {
-            "creator" : "Paul"
-        }
-    },{
-        "fullpath": "/path/to/image.ext",
-        "type": "image",
-        "metadata": {
-            "creator" : "Paul",
-            "resolution": "1024x768"
-        }
-    },{
-        "fullpath": "/path/to/video.ext",
-        "type": "video",
-        "metadata": {
-            "creator" : "Paul",
-            "resolution": "1024x768",
-            "runtime": "3mins"
-        }
-    },{
-        "fullpath": "/path/to/audio.ext",
-        "type": "audio",
-        "metadata": {
-            "creator" : "Paul",
-            "runtime": "3mins"
-        }
-    }
-]
-"""     
         var home = FileManager.default.homeDirectoryForCurrentUser
         home.appendPathComponent(filename)
         
@@ -82,9 +37,9 @@ class LoadTests: XCTestCase {
         alltypes.appendPathComponent(alltypesFilename)
         
         do {
-            try jsonString.write(to: home, atomically: true, encoding: String.Encoding.utf8)
-            try jsonString.write(to: current, atomically: true, encoding: String.Encoding.utf8)
-            try allTypesString.write(to: alltypes, atomically: true, encoding: String.Encoding.utf8)
+            try singleDocumentValid.write(to: home, atomically: true, encoding: String.Encoding.utf8)
+            try singleDocumentValid.write(to: current, atomically: true, encoding: String.Encoding.utf8)
+            try allTypesValid.write(to: alltypes, atomically: true, encoding: String.Encoding.utf8)
         } catch {
             // failed to write file – bad permissions, bad filename, missing permissions, or more likely it can't be converted to the encoding
             XCTFail("something went wrong writing files ... \(error)")

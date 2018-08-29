@@ -18,164 +18,22 @@ import XCTest
 //
 // a combination of all of the above cases (I want my importer to try its best)
 
-let document = """
-[
-    {
-        "fullpath": "/path/to/valid.ext",
-        "type": "document",
-        "metadata": {
-            "creator" : "Paul"
-        }
-    },{
-        "fullpath": "/path/to/invalid-no-creator.ext",
-        "type": "document",
-        "metadata": {}
-    }
-]
-"""
-
-let image = """
-[
-    {
-        "fullpath": "/path/to/valid.ext",
-        "type": "image",
-        "metadata": {
-            "creator" : "Paul",
-            "resolution": "1024x768"
-        }
-    },{
-        "fullpath": "/path/to/invalid-no-creator.ext",
-        "type": "image",
-        "metadata": {
-            "resolution": "1024x768"
-        }
-    },{
-        "fullpath": "/path/to/invalid-no-resolution.ext",
-        "type": "image",
-        "metadata": {
-            "creator": "Paul"
-        }
-    },{
-        "fullpath": "/path/to/invalid-no-metadata.ext",
-        "type": "image",
-        "metadata": {}
-    }
-]
-"""
-
-let video = """
-[
-    {
-        "fullpath": "/path/to/valid.ext",
-        "type": "video",
-        "metadata": {
-            "creator" : "Paul",
-            "resolution": "1024x768",
-            "runtime": "3min"
-        }
-    },{
-        "fullpath": "/path/to/invalid-no-creator.ext",
-        "type": "video",
-        "metadata": {
-            "resolution": "1024x768",
-            "runtime": "3min"
-        }
-    },{
-        "fullpath": "/path/to/invalid-no-resolution.ext",
-        "type": "video",
-        "metadata": {
-            "creator": "Paul",
-            "runtime": "3min"
-        }
-    },{
-        "fullpath": "/path/to/invalid-no-runtime.ext",
-        "type": "video",
-        "metadata": {
-            "creator": "Paul",
-            "resolution": "1024x768",
-        }
-    },{
-        "fullpath": "/path/to/invalid-no-runtime-no-resolution.ext",
-        "type": "video",
-        "metadata": {
-            "creator": "Paul",
-        }
-    },{
-        "fullpath": "/path/to/invalid-no-metadata.ext",
-        "type": "video",
-        "metadata": {}
-    }
-]
-"""
-
-let audio = """
-[
-    {
-        "fullpath": "/path/to/valid.ext",
-        "type": "audio",
-        "metadata": {
-            "creator" : "Paul",
-            "runtime": "3min"
-        }
-    },{
-        "fullpath": "/path/to/invalid-no-creator.ext",
-        "type": "audio",
-        "metadata": {
-            "runtime": "3min"
-        }
-    },{
-        "fullpath": "/path/to/invalid-no-runtime.ext",
-        "type": "audio",
-        "metadata": {
-            "creator": "Paul",
-        }
-    },{
-        "fullpath": "/path/to/invalid-no-metadata.ext",
-        "type": "audio",
-        "metadata": {}
-    }
-]
-"""
-
-var documentFileName = "auto-generated-document-test.json"
-var imageFileName = "auto-generated-image-test.json"
-var videoFileName = "auto-generated-video-test.json"
-var audioFileName = "auto-generated-audio-test.json"
-
-var jsonData: [String:String] = [
-    documentFileName: document,
-    imageFileName: image,
-    videoFileName: video,
-    audioFileName: audio,
-]
-
 class ValidationTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        
-        for file in jsonData{
-            var current = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-            current.appendPathComponent(file.key)
-            do {
-                try file.value.write(to: current, atomically: true, encoding: String.Encoding.utf8)
-            } catch {
-                XCTFail("something went wrong removing files ... \(error)")
-            }
+        do{
+            try writeAllToCurrentDirectory()
+        }catch{
+            XCTFail("Something went wrong removing test files from current working directory")
         }
-
-
     }
     
     override func tearDown() {
-        for file in jsonData{
-            var current = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-            current.appendPathComponent(file.key)
-            do{
-                try FileManager.default.removeItem(at: current)
-            }catch{
-                XCTFail("something went wrong removing files ... \(error)")
-            }
+        do{
+            try removeAllFromCurrentDirectory()
+        }catch{
+            XCTFail("Something went wrong removing test files from current working directory")
         }
         
         super.tearDown()
@@ -184,7 +42,7 @@ class ValidationTests: XCTestCase {
     func testDocument() {
         let loader = Importer()
         do{
-            _ = try loader.read(filename: documentFileName)
+            _ = try loader.read(filename: documentValidAndInvalidFileName)
         } catch MMImportError.validationFailed(let errors) {
             for cases in errors{
                 XCTAssert(cases.key.contains("invalid"))
@@ -197,7 +55,7 @@ class ValidationTests: XCTestCase {
     func testImage() {
         let loader = Importer()
         do{
-            _ = try loader.read(filename: imageFileName)
+            _ = try loader.read(filename: imageValidAndInvalidFileName)
         } catch MMImportError.validationFailed(let errors) {
             for cases in errors{
                 XCTAssert(cases.key.contains("invalid"))
@@ -210,7 +68,7 @@ class ValidationTests: XCTestCase {
     func testVideo() {
         let loader = Importer()
         do{
-            _ = try loader.read(filename: videoFileName)
+            _ = try loader.read(filename: videoValidAndInvalidFileName)
         } catch MMImportError.validationFailed(let errors) {
             for cases in errors{
                 XCTAssert(cases.key.contains("invalid"))
@@ -223,7 +81,7 @@ class ValidationTests: XCTestCase {
     func testAudio() {
         let loader = Importer()
         do{
-            _ = try loader.read(filename: audioFileName)
+            _ = try loader.read(filename: audioValidAndInvalidFileName)
         } catch MMImportError.validationFailed(let errors) {
             for cases in errors{
                 XCTAssert(cases.key.contains("invalid"))
