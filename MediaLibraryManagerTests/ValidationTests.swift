@@ -184,7 +184,7 @@ class ValidationTests: XCTestCase {
     func testDocument() {
         let loader = Importer()
         do{
-            try loader.read(filename: documentFileName)
+            _ = try loader.read(filename: documentFileName)
         } catch MMImportError.validationFailed(let errors) {
             for cases in errors{
                 XCTAssert(cases.key.contains("invalid"))
@@ -197,7 +197,7 @@ class ValidationTests: XCTestCase {
     func testImage() {
         let loader = Importer()
         do{
-            let result = try loader.read(filename: imageFileName)
+            _ = try loader.read(filename: imageFileName)
         } catch MMImportError.validationFailed(let errors) {
             for cases in errors{
                 XCTAssert(cases.key.contains("invalid"))
@@ -210,7 +210,7 @@ class ValidationTests: XCTestCase {
     func testVideo() {
         let loader = Importer()
         do{
-            let result = try loader.read(filename: videoFileName)
+            _ = try loader.read(filename: videoFileName)
         } catch MMImportError.validationFailed(let errors) {
             for cases in errors{
                 XCTAssert(cases.key.contains("invalid"))
@@ -223,7 +223,7 @@ class ValidationTests: XCTestCase {
     func testAudio() {
         let loader = Importer()
         do{
-            let result = try loader.read(filename: audioFileName)
+            _ = try loader.read(filename: audioFileName)
         } catch MMImportError.validationFailed(let errors) {
             for cases in errors{
                 XCTAssert(cases.key.contains("invalid"))
