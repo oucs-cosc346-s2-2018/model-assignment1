@@ -9,7 +9,7 @@
 import Foundation
 
 // TODO create your instance of your library here
-var library:MMCollection? = nil
+var library:Collection = Collection()
 var last = MMResultSet()
 
 // The while-loop below implements a basic command line interface. Some
@@ -45,9 +45,11 @@ while let line = prompt("> "){
         
         switch(commandString){
         case "load":
-            command = LoadCommand(paths: parts)
+            command = LoadCommand(collection: library, paths: parts)
             break
-         case "list", "add", "set", "del", "save-search", "save":
+        case "list":
+            command = ListCommand(collection: library, terms: parts)
+        case "add", "set", "del", "save-search", "save":
             command = UnimplementedCommand()
             break
         case "help":

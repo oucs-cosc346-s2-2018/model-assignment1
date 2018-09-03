@@ -69,6 +69,10 @@ class MMResultSet{
     func get(index: Int) throws -> MMFile{
         return self.results[index]
     }
+    
+    func result() -> [MMFile]{
+        return results
+    }
 }
 
 /// Generate a friendly prompt and wait for the user to enter a line of input
@@ -169,12 +173,36 @@ class QuitCommand : MMCommand{
 class LoadCommand : MMCommand{
     var results: MMResultSet? = nil
     var paths: [String]
+    var collection: Collection
     
-    init(paths: [String]){
+    init(collection: Collection, paths: [String]){
         self.paths = paths
+        self.collection = collection
     }
     
     func execute() throws{
-        throw MMCliError.unimplementedCommand
+        for path in self.paths{
+            collection.load(filename: path)
+        }
+    }
+}
+
+class ListCommand : MMCommand{
+    var results: MMResultSet? = nil
+    var terms: [String]
+    var collection: Collection
+    
+    init(collection: Collection, terms: [String]){
+        self.terms = terms
+        self.collection = collection
+    }
+    
+    func execute() throws{
+        // todo add in other search terms
+        if self.terms.count > 0{
+            self.results = MMResultSet(self.collection.search(term: self.terms[0]))
+        } else {
+           self.results = MMResultSet(self.collection.all())
+        }
     }
 }
