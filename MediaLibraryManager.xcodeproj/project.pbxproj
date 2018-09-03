@@ -9,6 +9,12 @@
 /* Begin PBXBuildFile section */
 		D3161D2420D748F800EC97E8 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3161D2320D748F800EC97E8 /* main.swift */; };
 		D3161D2D20D749BD00EC97E8 /* protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3161D2C20D749BD00EC97E8 /* protocols.swift */; };
+		D39C532121364636001AD9DC /* CollectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D39C532021364636001AD9DC /* CollectionTests.swift */; };
+		D39C53232136464E001AD9DC /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = D39C53222136464E001AD9DC /* Collection.swift */; };
+		D39C53242136464E001AD9DC /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = D39C53222136464E001AD9DC /* Collection.swift */; };
+		D39C532621364CC8001AD9DC /* JsonTestStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D39C532521364CC8001AD9DC /* JsonTestStrings.swift */; };
+		D39C536F213CCA32001AD9DC /* CommandTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D39C536E213CCA32001AD9DC /* CommandTests.swift */; };
+		D39C5371213CD6C1001AD9DC /* SaveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D39C5370213CD6C1001AD9DC /* SaveTests.swift */; };
 		D3A241E62133AE390061C4F3 /* commands.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A241E52133AE390061C4F3 /* commands.swift */; };
 		D3A241EE2133B0720061C4F3 /* MediaLibraryManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A241ED2133B0720061C4F3 /* MediaLibraryManagerTests.swift */; };
 		D3A241F82133B0D90061C4F3 /* LoadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A241F72133B0D90061C4F3 /* LoadTests.swift */; };
@@ -44,6 +50,11 @@
 		D3161D2020D748F800EC97E8 /* MediaLibraryManager */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MediaLibraryManager; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3161D2320D748F800EC97E8 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		D3161D2C20D749BD00EC97E8 /* protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = protocols.swift; sourceTree = "<group>"; };
+		D39C532021364636001AD9DC /* CollectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionTests.swift; sourceTree = "<group>"; };
+		D39C53222136464E001AD9DC /* Collection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
+		D39C532521364CC8001AD9DC /* JsonTestStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonTestStrings.swift; sourceTree = "<group>"; };
+		D39C536E213CCA32001AD9DC /* CommandTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandTests.swift; sourceTree = "<group>"; };
+		D39C5370213CD6C1001AD9DC /* SaveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveTests.swift; sourceTree = "<group>"; };
 		D3A241E52133AE390061C4F3 /* commands.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = commands.swift; sourceTree = "<group>"; };
 		D3A241EB2133B0720061C4F3 /* MediaLibraryManagerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MediaLibraryManagerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3A241ED2133B0720061C4F3 /* MediaLibraryManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaLibraryManagerTests.swift; sourceTree = "<group>"; };
@@ -106,6 +117,7 @@
 				D3A242112133C0960061C4F3 /* IO.swift */,
 				D3A2421D2134B62C0061C4F3 /* test.json */,
 				D3A24227213502A30061C4F3 /* Validate.swift */,
+				D39C53222136464E001AD9DC /* Collection.swift */,
 			);
 			path = MediaLibraryManager;
 			sourceTree = "<group>";
@@ -114,9 +126,13 @@
 			isa = PBXGroup;
 			children = (
 				D3A241F72133B0D90061C4F3 /* LoadTests.swift */,
+				D39C5370213CD6C1001AD9DC /* SaveTests.swift */,
 				D3A242252134FDBD0061C4F3 /* ValidationTests.swift */,
 				D3A241ED2133B0720061C4F3 /* MediaLibraryManagerTests.swift */,
 				D3A241EF2133B0720061C4F3 /* Info.plist */,
+				D39C532021364636001AD9DC /* CollectionTests.swift */,
+				D39C532521364CC8001AD9DC /* JsonTestStrings.swift */,
+				D39C536E213CCA32001AD9DC /* CommandTests.swift */,
 			);
 			path = MediaLibraryManagerTests;
 			sourceTree = "<group>";
@@ -209,6 +225,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D39C53232136464E001AD9DC /* Collection.swift in Sources */,
 				D3A242122133C0960061C4F3 /* IO.swift in Sources */,
 				D3CB3A9D20DB264200AF519E /* cli.swift in Sources */,
 				D3A241FC2133B2070061C4F3 /* File.swift in Sources */,
@@ -230,8 +247,13 @@
 				D3A242212134B83C0061C4F3 /* cli.swift in Sources */,
 				D3A242292135405D0061C4F3 /* Validate.swift in Sources */,
 				D3A242262134FDBD0061C4F3 /* ValidationTests.swift in Sources */,
+				D39C536F213CCA32001AD9DC /* CommandTests.swift in Sources */,
+				D39C53242136464E001AD9DC /* Collection.swift in Sources */,
 				D3A242222134B83C0061C4F3 /* Metadata.swift in Sources */,
+				D39C532621364CC8001AD9DC /* JsonTestStrings.swift in Sources */,
+				D39C532121364636001AD9DC /* CollectionTests.swift in Sources */,
 				D3A242232134B83C0061C4F3 /* File.swift in Sources */,
+				D39C5371213CD6C1001AD9DC /* SaveTests.swift in Sources */,
 				D3A242242134B83C0061C4F3 /* IO.swift in Sources */,
 				D3A241EE2133B0720061C4F3 /* MediaLibraryManagerTests.swift in Sources */,
 				D3A241F82133B0D90061C4F3 /* LoadTests.swift in Sources */,
