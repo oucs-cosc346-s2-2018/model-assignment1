@@ -39,6 +39,39 @@ struct F: Codable{
         }
         return (key, nil)
     }
+
+    static func fromFile(file: MMFile) -> F{
+        //TODO compose this of the different parts of the file
+        var fullpath = file.path
+        
+        var type: String {
+            // TODO there's gotta be a better way to map from classes to names and vice-versa.
+            if file is DocumentFile{
+                return "document"
+            }
+            if file is ImageFile{
+                return "image"
+            }
+            if file is VideoFile{
+                return "video"
+            }
+            if file is AudioFile{
+                return "audio"
+            }
+            return "unknown"
+        }
+        
+        var data: [String: String] {
+            var result:[String: String] = [:]
+            for m in file.metadata {
+                result[m.keyword] = m.value
+            }
+            return result
+        }
+        
+        return F(fullpath: fullpath, type: type, metadata: data)
+        
+    }
     
     func toFile() throws -> File{
         var errors: [MMValidationError] = []
@@ -84,9 +117,8 @@ struct F: Codable{
     }
 }
 
-class Importer: MMFileImport{
-    
-    private func normalisePath(filename: String) throws -> URL{
+class IO{
+    func normalisePath(filename: String) throws -> URL{
         let start = filename.index(after: filename.startIndex)
         let end = filename.endIndex
         
@@ -107,7 +139,9 @@ class Importer: MMFileImport{
         }
         return result
     }
-    
+}
+
+class Importer: IO, MMFileImport{
     func read(filename: String) throws -> [MMFile] {
         var result: [MMFile] = []
         var errors: [String: [MMValidationError]] = [:]
@@ -148,5 +182,24 @@ class Importer: MMFileImport{
         }
         
         return result
+    }
+}
+
+class Exporter: IO, MMFileExport{
+    func write(filename: String, items: [MMFile]) throws {
+        //        do{
+        let path = try normalisePath(filename: filename)
+        
+        var output:[F] = []
+        for f in items{
+            output.append(F.fromFile(file: f))
+        }
+        
+        let encoder = JSONEncoder()
+        
+        let data = try encoder.encode(output)
+        try data.write(to: path)
+        //        } catch {
+        //        }
     }
 }
