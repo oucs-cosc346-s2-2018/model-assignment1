@@ -7,11 +7,14 @@
 //
 
 import Foundation
-
 class File: MMFile{
     var metadata: [MMMetadata]
     var filename: String
     var path: String
+    
+    var requiredMetadata: Set<String> {
+        return Set<String>()
+    }
     
     var description: String{
         return "\(self.filename)"
@@ -35,27 +38,30 @@ class File: MMFile{
 class DocumentFile: File{
     var creator: MMMetadata
     
+    override var requiredMetadata: Set<String> {
+        return Set<String>(["creator"])
+    }
+    
     init(path: String, filename: String, metadata: [MMMetadata], creator: MMMetadata){
         self.creator = creator
         super.init(path: path, filename: filename, metadata: metadata)
     }
     
     convenience init(path: String, filename: String, creator: MMMetadata){
-        self.init(path: path, filename: filename, metadata: [], creator: creator)
+        self.init(path: path, filename: filename, metadata: [creator], creator: creator)
     }
     
     convenience init(creator: MMMetadata){
-        self.init(path: "", filename: "", metadata: [], creator: creator)
-    }
-    
-    convenience init(){
-        self.init(path: "", filename: "", metadata: [], creator: Metadata())
+        self.init(path: "", filename: "", metadata: [creator], creator: creator)
     }
 }
 
 class ImageFile: File{
     var creator: MMMetadata
     var resolution: MMMetadata
+    override var requiredMetadata: Set<String> {
+        return Set<String>(["creator", "resolution"])
+    }
     
     init(path: String, filename: String, metadata: [MMMetadata], creator: MMMetadata, resolution: MMMetadata){
         self.creator = creator
@@ -64,21 +70,20 @@ class ImageFile: File{
     }
     
     convenience init(path: String, filename: String, creator: MMMetadata, resolution: MMMetadata){
-        self.init(path: path, filename: filename, metadata: [], creator: creator, resolution: resolution)
+        self.init(path: path, filename: filename, metadata: [creator, resolution], creator: creator, resolution: resolution)
     }
     
     convenience init(creator: MMMetadata, resolution: MMMetadata){
-        self.init(path: "", filename: "", metadata: [], creator: creator, resolution: resolution)
-    }
-    
-    convenience init(){
-        self.init(path: "", filename: "", metadata: [], creator: Metadata(), resolution: Metadata())
+        self.init(path: "", filename: "", metadata: [creator, resolution], creator: creator, resolution: resolution)
     }
     
 }
 class AudioFile: File{
     var creator: MMMetadata
     var runtime: MMMetadata
+    override var requiredMetadata: Set<String> {
+        return Set<String>(["creator", "runtime"])
+    }
     
     init(path: String, filename: String, metadata: [MMMetadata], creator: MMMetadata, runtime: MMMetadata){
         self.creator = creator
@@ -87,15 +92,11 @@ class AudioFile: File{
     }
     
     convenience init(path: String, filename: String, creator: MMMetadata, runtime: MMMetadata){
-        self.init(path: path, filename: filename, metadata: [], creator: creator, runtime: runtime)
+        self.init(path: path, filename: filename, metadata: [creator, runtime], creator: creator, runtime: runtime)
     }
     
     convenience init(creator: MMMetadata, runtime: MMMetadata){
-        self.init(path: "", filename: "", metadata: [], creator: creator, runtime: runtime)
-    }
-    
-    convenience init(){
-        self.init(path: "", filename: "", metadata: [], creator: Metadata(), runtime: Metadata())
+        self.init(path: "", filename: "", metadata: [creator, runtime], creator: creator, runtime: runtime)
     }
 }
 
@@ -103,6 +104,10 @@ class VideoFile: File{
     var creator: MMMetadata
     var runtime: MMMetadata
     var resolution: MMMetadata
+    
+    override var requiredMetadata: Set<String> {
+        return Set<String>(["creator", "runtime", "resolution"])
+    }
     
     init(path: String, filename: String, metadata: [MMMetadata], creator: MMMetadata, resolution: MMMetadata, runtime: MMMetadata){
         self.creator = creator
@@ -112,13 +117,10 @@ class VideoFile: File{
     }
     
     convenience init(path: String, filename: String, creator: MMMetadata, resolution: MMMetadata, runtime: MMMetadata){
-        self.init(path: path, filename: filename, metadata: [], creator: creator, resolution: resolution, runtime: runtime)
+        self.init(path: path, filename: filename, metadata: [creator, resolution, runtime], creator: creator, resolution: resolution, runtime: runtime)
     }
     
     convenience init(creator: MMMetadata, resolution: MMMetadata, runtime: MMMetadata){
-        self.init(path: "", filename: "", metadata: [], creator: creator, resolution: resolution, runtime: runtime)
-    }
-    convenience init(){
-        self.init(path: "", filename: "", metadata: [], creator: Metadata(), resolution: Metadata(), runtime: Metadata())
+        self.init(path: "", filename: "", metadata:[creator, resolution, runtime], creator: creator, resolution: resolution, runtime: runtime)
     }
 }
