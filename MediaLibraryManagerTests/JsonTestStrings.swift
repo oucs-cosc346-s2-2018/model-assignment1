@@ -48,7 +48,7 @@ let allTypesValid: String = """
         "fullpath": "/path/to/audio.ext",
         "type": "audio",
         "metadata": {
-        "creator" : "Paul",
+            "creator" : "Paul",
             "runtime": "3mins"
         }
     }
