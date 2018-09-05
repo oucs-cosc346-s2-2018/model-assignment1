@@ -168,10 +168,9 @@ class QuitCommand: MMCommand {
 
 class AddMetadataCommand: MMCommand {
     var results: MMResultSet?
-
-    var params: [String]
-    var collection: Collection
-    var items: [MMFile]
+    private var params: [String]
+    private var collection: Collection
+    private var items: [MMFile]
 
     init(collection: Collection, items: [MMFile], params: [String]) {
         // I don't think we need the collection for this part if we were to
@@ -192,6 +191,7 @@ class AddMetadataCommand: MMCommand {
 
         let file = self.items[index]
 
+        //swiftlint:disable:next todo
         //TODO: pairwise param traversal
         let keyword = params.remove(at: 0)
         let value = params.remove(at: 0)
@@ -212,10 +212,9 @@ class AddMetadataCommand: MMCommand {
 
 class SetMetadataCommand: MMCommand {
     var results: MMResultSet?
-
-    var params: [String]
-    var collection: Collection
-    var items: [MMFile]
+    private var params: [String]
+    private var collection: Collection
+    private var items: [MMFile]
 
     init(collection: Collection, items: [MMFile], params: [String]) {
         // I don't think we need the collection for this part if we were to
@@ -226,12 +225,10 @@ class SetMetadataCommand: MMCommand {
     }
 
     func execute() throws {
-
-        throw MMCliError.unimplementedCommand
-
         if params.count < 1 {
             throw MMCliError.invalidParameters
         }
+
         guard let index = Int(params.remove(at: 0)) else {
             throw MMCliError.invalidParameters
         }
@@ -245,10 +242,12 @@ class SetMetadataCommand: MMCommand {
 
         //swiftlint:disable:next todo
         //TODO: bad code smell!!
+
         //swiftlint:disable:next todo
         //TODO: actually set the data
+
         //swiftlint:disable:next force_cast
-        (file as! File).add(keyword: keyword, value: value)
+        (file as! File).edit(keyword: keyword, value: value)
 
         // this is necessary as we've made a copy of the file and modified it
         collection.replace(file: file)
@@ -261,10 +260,9 @@ class SetMetadataCommand: MMCommand {
 
 class DelMetadataCommand: MMCommand {
     var results: MMResultSet?
-
-    var params: [String]
-    var collection: Collection
-    var items: [MMFile]
+    private var params: [String]
+    private var collection: Collection
+    private var items: [MMFile]
 
     init(collection: Collection, items: [MMFile], params: [String]) {
         // I don't think we need the collection for this part if we were to
@@ -275,9 +273,6 @@ class DelMetadataCommand: MMCommand {
     }
 
     func execute() throws {
-
-        throw MMCliError.unimplementedCommand
-
         if params.count < 1 {
             throw MMCliError.invalidParameters
         }
@@ -292,9 +287,11 @@ class DelMetadataCommand: MMCommand {
         let keyword = params.remove(at: 0)
         let value = params.remove(at: 0)
 
-        //swiftlint:disable:next todo
-        //TODO: bad code smell -- too much coupling
-        file.remove(metadata: Metadata(keyword: keyword, value: value))
+        //swiftlint:disable:next force_cast
+        (file as! File).delete(keyword: keyword, value: value)
+
+        // this is necessary as we've made a copy of the file and modified it
+        collection.replace(file: file)
 
         //swiftlint:disable:next todo
         //TODO: this is inefficient
@@ -304,8 +301,8 @@ class DelMetadataCommand: MMCommand {
 
 class LoadCommand: MMCommand {
     var results: MMResultSet?
-    var paths: [String]
-    var collection: Collection
+    private var paths: [String]
+    private var collection: Collection
 
     init(collection: Collection, paths: [String]) {
         self.paths = paths
@@ -321,8 +318,8 @@ class LoadCommand: MMCommand {
 
 class ListCommand: MMCommand {
     var results: MMResultSet?
-    var terms: [String]
-    var collection: Collection
+    private var terms: [String]
+    private var collection: Collection
 
     init(collection: Collection, terms: [String]) {
         self.terms = terms
@@ -343,10 +340,9 @@ class ListCommand: MMCommand {
 
 class SaveCommand: MMCommand {
     var results: MMResultSet?
-
-    var items: [MMFile]?
-    var collection: Collection
-    var filename: [String]
+    private var items: [MMFile]?
+    private var collection: Collection
+    private var filename: [String]
 
     init(collection: Collection, filename: [String], items: [MMFile]?) {
         self.items = items
