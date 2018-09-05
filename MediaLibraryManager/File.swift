@@ -7,11 +7,28 @@
 //
 
 import Foundation
+
+extension MMFile {
+    var fullpath: String {
+        get {
+            if var result = URL(string: self.path) {
+                result.appendPathComponent(self.filename)
+                return result.path
+            }
+            return self.path + "/" + self.filename
+        }
+        set {
+            let url = URL(fileURLWithPath: newValue)
+            self.path = url.deletingLastPathComponent().relativePath
+            self.filename = url.lastPathComponent
+        }
+    }
+}
+
 class File: MMFile {
     var metadata: [MMMetadata]
     var filename: String
     var path: String
-    var fullpath: String
 
     var description: String {
         return "\(self.filename)"
@@ -21,7 +38,6 @@ class File: MMFile {
         self.path = path
         self.filename = filename
         self.metadata = metadata
-        self.fullpath = filename + path
     }
 
     convenience init(path: String, filename: String) {

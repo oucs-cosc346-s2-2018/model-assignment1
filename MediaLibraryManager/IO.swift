@@ -90,9 +90,7 @@ fileprivate struct F: Codable {
     }
 
     static func fromFile(file: MMFile) -> F {
-        //swiftlint:disable:next todo
-        //TODO: compose the fullpath from different parts of the file
-        var fullpath = file.path
+        var fullpath = file.fullpath
 
         var fileType: String = MMFileType.lookup(file: file)
 
@@ -107,8 +105,6 @@ fileprivate struct F: Codable {
         return F(fullpath: fullpath, fileType: fileType, metadata: data)
     }
 
-    //swiftlint:disable:next todo
-    //TODO: reduce the length of the function
     func toFile() throws -> File {
         var errors: [MMValidationError] = []
         var metadata: [MMMetadata] = []
@@ -139,8 +135,13 @@ fileprivate struct F: Codable {
                 // here I have to call the initialiser directly. This is
                 // usually done by the compiler, but because I've got a
                 // variable type I need to be explicit about what's going on.
-                return type.dynamic.init(path: self.fullpath,
-                                   filename: self.fullpath,
+
+                let url = URL(fileURLWithPath: self.fullpath)
+                let path = url.deletingLastPathComponent().relativePath
+                let filename = url.lastPathComponent
+
+                return type.dynamic.init(path: path,
+                                   filename: filename,
                                    metadata: metadata)
             }
             throw MMImportError.validationError(filename: self.fullpath, errors: errors)
