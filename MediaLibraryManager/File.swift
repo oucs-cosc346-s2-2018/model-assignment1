@@ -48,12 +48,6 @@ class File: MMFile {
         self.init(path: "", filename: "", metadata: [])
     }
 
-    func add(keyword: String, value: String) {
-        // swiftlint:disable:next identifier_name
-        let md = Metadata(keyword: keyword, value: value)
-        self.metadata.append(md)
-    }
-
     class var requiredMetadata: Set<String> {
         return Set<String>()
     }
@@ -74,6 +68,12 @@ class File: MMFile {
             }
         }
         return result
+    }
+
+    func add(keyword: String, value: String) {
+        // swiftlint:disable:next identifier_name
+        let md = Metadata(keyword: keyword, value: value)
+        self.metadata.append(md)
     }
 }
 
@@ -122,7 +122,7 @@ class ImageFile: File {
                      metadata: [MMMetadata],
                      creator: MMMetadata,
                      resolution: MMMetadata) {
-        
+
         self.init(path: path, filename: filename, metadata: metadata)
     }
 
