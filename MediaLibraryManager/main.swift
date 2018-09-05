@@ -8,8 +8,7 @@
 
 import Foundation
 
-// TODO create your instance of your library here
-var library:Collection = Collection()
+var library: Collection = Collection()
 var last = MMResultSet()
 
 // The while-loop below implements a basic command line interface. Some
@@ -31,53 +30,56 @@ var last = MMResultSet()
 //  to the file at index 3 in the list
 //
 // Feel free to extend these commands/errors as you need to.
-while let line = prompt("> "){
-    var commandString : String = ""
+while let line = prompt("> ") {
+    var commandString: String = ""
     var parts = line.split(separator: " ").map({String($0)})
     var command: MMCommand
-    
-    do{
+
+    do {
         guard parts.count > 0 else {
             throw MMCliError.noCommand
         }
-        
-        commandString = parts.removeFirst();
-        
-        switch(commandString){
+        commandString = parts.removeFirst()
+
+        switch commandString {
         case "load":
             command = LoadCommand(collection: library, paths: parts)
-            break
         case "list":
             command = ListCommand(collection: library, terms: parts)
-        case "add", "set", "del", "save-search", "save":
-            command = UnimplementedCommand()
-            break
+        case "add":
+            command = AddMetadataCommand(collection: library, items: last.result(), params: parts)
+        case "set":
+            command = SetMetadataCommand(collection: library, items: last.result(), params: parts)
+        case "del":
+            command = DelMetadataCommand(collection: library, items: last.result(), params: parts)
+        case "save-search":
+            command = SaveCommand(collection: library, filename: parts, items: last.result())
+        case "save":
+            command = SaveCommand(collection: library, filename: parts, items: nil)
         case "help":
             command = HelpCommand()
-            break
         case "quit":
             command = QuitCommand()
-            break
         default:
             throw MMCliError.unknownCommand
         }
         // try execute the command and catch any thrown errors below
         try command.execute()
-        
+
         // if there are any results from the command, print them out here
         if let results = command.results {
             results.show()
             last = results
         }
-    }catch MMCliError.noCommand {
+    } catch MMCliError.noCommand {
         print("No command given -- see \"help\" for details.")
-    }catch MMCliError.unknownCommand {
+    } catch MMCliError.unknownCommand {
         print("Command \"\(commandString)\" not found -- see \"help\" for details.")
-    }catch MMCliError.invalidParameters {
+    } catch MMCliError.invalidParameters {
         print("Invalid parameters for \"\(commandString)\" -- see \"help\" for details.")
-    }catch MMCliError.unimplementedCommand {
+    } catch MMCliError.unimplementedCommand {
         print("The \"\(commandString)\" command is not implemented.")
-    }catch MMCliError.missingResultSet {
+    } catch MMCliError.missingResultSet {
         print("No previous results to work from.")
     }
 }
