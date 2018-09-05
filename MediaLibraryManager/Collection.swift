@@ -53,7 +53,7 @@ extension MMFile {
         // modified, I can't think of a way around this.
         //swiftlint:disable:next identifier_name
         if let me = (self as? File) {
-            if me.requiredMetadata.contains(metadata.keyword) {
+            if type(of: me).requiredMetadata.contains(metadata.keyword) {
                 return true
             }
         }

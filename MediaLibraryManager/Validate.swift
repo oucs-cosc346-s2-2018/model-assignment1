@@ -32,11 +32,17 @@ enum MMValidationError: Error {
     case missingField(which: String)
 }
 
-class KeywordValidator {
+class KeywordValidator: CustomStringConvertible {
     var keyword: String
+
+    var description: String {
+        return self.keyword
+    }
+
     init(keyword: String) {
         self.keyword = keyword
     }
+
     func validate(data: [MMMetadata]) throws {
         var valid = false
         // swiftlint:disable:next identifier_name
