@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum MMImportError: Error{
+enum MMImportError: Error {
     case invalidFilePath
     case fileDoesntExist
     case badPermissions
@@ -16,99 +16,150 @@ enum MMImportError: Error{
     case validationFailed(errors: [String: [MMValidationError]])
 }
 
-var documentValidator = ValidatorSuite(validators: [KeywordValidator(keyword: "creator")])
+enum MMExportError: Error {
+    case invalidFilePath
+}
 
-var imageValidator = ValidatorSuite(validators: [KeywordValidator(keyword: "creator"),
-                                            KeywordValidator(keyword: "resolution")])
+enum MMFileTypes{
+    case document
+    case image
+    case audio
+    case video
+}
 
-var videoValidator = ValidatorSuite(validators: [KeywordValidator(keyword: "creator"),
-                                            KeywordValidator(keyword: "runtime"),
-                                            KeywordValidator(keyword: "resolution")])
+//swiftlint:disable:next todo
+//TODO: these can be created statically from the different classes
+// the classes know about their required metadata, so why not let them create
+// their own validator?
+var documentValidator = ValidatorSuite(validators: [
+    KeywordValidator(keyword: "creator")])
 
-var audioValidator = ValidatorSuite(validators: [KeywordValidator(keyword: "creator"),
-                                            KeywordValidator(keyword: "runtime")])
+var imageValidator = ValidatorSuite(validators: [
+    KeywordValidator(keyword: "creator"),
+    KeywordValidator(keyword: "resolution")])
 
-struct F: Codable{
+var videoValidator = ValidatorSuite(validators: [
+    KeywordValidator(keyword: "creator"),
+    KeywordValidator(keyword: "runtime"),
+    KeywordValidator(keyword: "resolution")])
+
+var audioValidator = ValidatorSuite(validators: [
+    KeywordValidator(keyword: "creator"),
+    KeywordValidator(keyword: "runtime")])
+
+// swiftlint:disable:next type_name
+struct F: Codable {
     var fullpath: String
     var type: String
     var metadata: [String: String]
-    
-    func find(key: String) -> (String, String?){
-        if metadata.contains(where: {$0.key == key}){
+
+    func find(key: String) -> (String, String?) {
+        if metadata.contains(where: {$0.key == key}) {
             return (key, metadata[key])
         }
         return (key, nil)
     }
 
-    static func fromFile(file: MMFile) -> F{
-        //TODO compose this of the different parts of the file
+    static func fromFile(file: MMFile) -> F {
+        //swiftlint:disable:next todo
+        //TODO: compose the fullpath from different parts of the file
         var fullpath = file.path
-        
+
         var type: String {
-            // TODO there's gotta be a better way to map from classes to names and vice-versa.
-            if file is DocumentFile{
+            //swiftlint:disable:next todo
+            // TODO: there must be a better way to map from classes to names and vice-versa
+            if file is DocumentFile {
                 return "document"
             }
-            if file is ImageFile{
+            if file is ImageFile {
                 return "image"
             }
-            if file is VideoFile{
+            if file is VideoFile {
                 return "video"
             }
-            if file is AudioFile{
+            if file is AudioFile {
                 return "audio"
             }
             return "unknown"
         }
-        
+
         var data: [String: String] {
-            var result:[String: String] = [:]
+            var result: [String: String] = [:]
+
+            //swiftlint:disable:next identifier_name
             for m in file.metadata {
                 result[m.keyword] = m.value
             }
             return result
         }
-        
+
         return F(fullpath: fullpath, type: type, metadata: data)
-        
+
     }
-    
-    func toFile() throws -> File{
+
+    //swiftlint:disable:next todo
+    //TODO: reduce the length of the function
+
+    // swiftlint:disable:next function_body_length
+    func toFile() throws -> File {
         var errors: [MMValidationError] = []
-        var metadata:[MMMetadata] = []
-        for md in self.metadata{
+        var metadata: [MMMetadata] = []
+
+        // swiftlint:disable:next identifier_name
+        for md in self.metadata {
             metadata.append(Metadata(keyword: md.key, value: md.value))
         }
-        
-        switch(self.type){
+
+        //swiftlint:disable:next todo
+        //TODO: this is a classic case for a factory type pattern
+        switch self.type {
         case "document":
             errors = documentValidator.validate(data: metadata)
-            if errors.count == 0{
+            if errors.count == 0 {
                 let creator = metadata.first(where: {$0.keyword == "creator"})!
-                return DocumentFile(path: self.fullpath, filename: self.fullpath, metadata: metadata, creator: creator)
+
+                return DocumentFile(path: self.fullpath,
+                                    filename: self.fullpath,
+                                    metadata: metadata,
+                                    creator: creator)
             }
         case "image":
             errors = imageValidator.validate(data: metadata)
-            if errors.count == 0{
+            if errors.count == 0 {
                 let creator = metadata.first(where: {$0.keyword == "creator"})!
                 let resolution = metadata.first(where: {$0.keyword == "resolution"})!
-            
-                return ImageFile(path: self.fullpath, filename: self.fullpath, metadata: metadata, creator: creator, resolution: resolution)
+
+                return ImageFile(path: self.fullpath,
+                                 filename: self.fullpath,
+                                 metadata: metadata,
+                                 creator: creator,
+                                 resolution: resolution)
             }
         case "video":
             errors = videoValidator.validate(data: metadata)
-            if errors.count == 0{
+            if errors.count == 0 {
                 let creator = metadata.first(where: {$0.keyword == "creator"})!
                 let resolution = metadata.first(where: {$0.keyword == "resolution"})!
                 let runtime = metadata.first(where: {$0.keyword == "runtime"})!
-                return VideoFile(path: self.fullpath, filename: self.fullpath, metadata: metadata, creator: creator, resolution: resolution, runtime: runtime)
+
+                return VideoFile(path: self.fullpath,
+                                 filename: self.fullpath,
+                                 metadata: metadata,
+                                 creator: creator,
+                                 resolution: resolution,
+                                 runtime: runtime)
             }
         case "audio":
             errors = audioValidator.validate(data: metadata)
-            if errors.count == 0{
+            if errors.count == 0 {
                 let creator = metadata.first(where: {$0.keyword == "creator"})!
                 let runtime = metadata.first(where: {$0.keyword == "runtime"})!
-                return AudioFile(path: self.fullpath, filename: self.fullpath, metadata: metadata, creator: creator, runtime: runtime)
+
+                return AudioFile(path: self.fullpath,
+                                 filename: self.fullpath,
+                                 metadata: metadata,
+                                 creator: creator,
+                                 runtime: runtime)
             }
         default:
             throw MMValidationError.unknownFileType
@@ -117,13 +168,14 @@ struct F: Codable{
     }
 }
 
-class IO{
-    func normalisePath(filename: String) throws -> URL{
+// swiftlint:disable:next type_name
+class IO {
+    func normalisePath(filename: String) throws -> URL {
         let start = filename.index(after: filename.startIndex)
         let end = filename.endIndex
-        
+
         var result: URL
-        switch(filename.prefix(1)){
+        switch filename.prefix(1) {
         case "/":
             result = URL(fileURLWithPath: filename)
         case "~":
@@ -141,31 +193,33 @@ class IO{
     }
 }
 
-class Importer: IO, MMFileImport{
+class Importer: IO, MMFileImport {
     func read(filename: String) throws -> [MMFile] {
         var result: [MMFile] = []
         var errors: [String: [MMValidationError]] = [:]
-        
-        do{
+
+        do {
             let path = try normalisePath(filename: filename)
             // check file exists
             guard !FileManager.default.fileExists(atPath: path.absoluteString) else {
                 throw MMImportError.fileDoesntExist
             }
-            
+
             // check permissions
             guard !FileManager.default.isReadableFile(atPath: path.absoluteString) else {
                 throw MMImportError.badPermissions
             }
-            
+
             let data = try Data(contentsOf: path)
             let decoder = JSONDecoder()
             let media = try decoder.decode([F].self, from: data)
-            
-            for file in media{
-                do{
+
+            for file in media {
+                do {
                     try result.append(file.toFile())
-                } catch MMImportError.validationError(let fn, let errs){
+
+                // swiftlint:disable:next identifier_name
+                } catch MMImportError.validationError(let fn, let errs) {
                     errors[fn] = errs
                 }
             }
@@ -176,27 +230,29 @@ class Importer: IO, MMFileImport{
         } catch MMImportError.invalidFilePath {
             print("invalid file path[\(filename)]")
         }
-        
-        if errors.count > 0{
+
+        if errors.count > 0 {
             throw MMImportError.validationFailed(errors: errors)
         }
-        
+
         return result
     }
 }
 
-class Exporter: IO, MMFileExport{
+class Exporter: IO, MMFileExport {
     func write(filename: String, items: [MMFile]) throws {
         //        do{
         let path = try normalisePath(filename: filename)
-        
-        var output:[F] = []
-        for f in items{
+
+        var output: [F] = []
+
+        //swiftlint:disable:next identifier_name
+        for f in items {
             output.append(F.fromFile(file: f))
         }
-        
+
         let encoder = JSONEncoder()
-        
+
         let data = try encoder.encode(output)
         try data.write(to: path)
         //        } catch {

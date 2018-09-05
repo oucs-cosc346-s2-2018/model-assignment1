@@ -23,45 +23,46 @@ class LoadTests: XCTestCase {
 
     var filename: String = "automatically-generated-test-data.json"
     var alltypesFilename: String = "automatically-generated-test-alltypes.json"
-    
+
     override func setUp() {
         super.setUp()
-        
+
         var home = FileManager.default.homeDirectoryForCurrentUser
         home.appendPathComponent(filename)
-        
+
         var current = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
         current.appendPathComponent(filename)
-        
+
         var alltypes = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
         alltypes.appendPathComponent(alltypesFilename)
-        
+
         do {
             try singleDocumentValid.write(to: home, atomically: true, encoding: String.Encoding.utf8)
             try singleDocumentValid.write(to: current, atomically: true, encoding: String.Encoding.utf8)
             try allTypesValid.write(to: alltypes, atomically: true, encoding: String.Encoding.utf8)
         } catch {
-            // failed to write file – bad permissions, bad filename, missing permissions, or more likely it can't be converted to the encoding
+            // failed to write file – bad permissions, bad filename,
+            // missing permissions, or more likely it can't be converted to the encoding
             XCTFail("something went wrong writing files ... \(error)")
         }
     }
-    
+
     override func tearDown() {
-        
+
         var home = FileManager.default.homeDirectoryForCurrentUser
         home.appendPathComponent(filename)
-        
+
         var current = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
         current.appendPathComponent(filename)
-        
+
         var alltypes = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
         alltypes.appendPathComponent(alltypesFilename)
-        
-        do{
+
+        do {
             try FileManager.default.removeItem(at: home)
             try FileManager.default.removeItem(at: current)
             try FileManager.default.removeItem(at: alltypes)
-        }catch{
+        } catch {
             XCTFail("something went wrong removing files ... \(error)")
         }
         super.tearDown()
@@ -72,49 +73,49 @@ class LoadTests: XCTestCase {
         current.appendPathComponent(filename)
 
         let loader = Importer()
-        do{
+        do {
             let result = try loader.read(filename: current.path)
             XCTAssert(result.count > 0, "Expected to read *some* data")
-        }catch{
+        } catch {
             XCTFail("Generated un expected exception")
         }
     }
-    
+
     func testFromWorkingDirectory() {
         let loader = Importer()
-        do{
+        do {
             let result = try loader.read(filename: "./" + filename)
             XCTAssert(result.count > 0, "Expected to read *some* data")
-        }catch{
+        } catch {
             XCTFail("Generated un expected exception")
         }
     }
-    
+
     func testFromHomeDirectory() {
         let loader = Importer()
-        do{
+        do {
             let result = try loader.read(filename: "~/" + filename)
             XCTAssert(result.count > 0, "Expected to read *some* data")
-        }catch{
+        } catch {
             XCTFail("Generated un expected exception")
         }
     }
-    
-    func testAllFileTypes(){
+
+    func testAllFileTypes() {
         let loader = Importer()
-        do{
+        do {
             let result = try loader.read(filename: alltypesFilename)
-            
+
             XCTAssert(result.count > 0, "Expected to read *some* data")
             XCTAssert(!(result.count < 4), "Too much data")
             XCTAssert(!(result.count > 4), "Not enough data")
-            
-            var counts: [String : Int] = ["document": 0,
+
+            var counts: [String: Int] = ["document": 0,
                                           "image": 0,
                                           "video": 0,
                                           "audio": 0]
-            for file in result{
-                switch(type(of: file)){
+            for file in result {
+                switch type(of: file) {
                 case is DocumentFile.Type:
                     counts["document"]? += 1
                 case is ImageFile.Type:
@@ -127,12 +128,12 @@ class LoadTests: XCTestCase {
                     XCTFail("Unknown file type encountered...")
                 }
             }
-            
-            for count in counts{
+
+            for count in counts {
                 XCTAssert(count.value == 1, "too many \(count.key) items")
             }
-            
-        }catch{
+
+        } catch {
             XCTFail("Generated un expected exception")
         }
     }

@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 let singleDocumentValid: String = """
 [
     {
@@ -180,24 +179,24 @@ var imageValidAndInvalidFileName = "auto-generated-image-test.json"
 var videoValidAndInvalidFileName = "auto-generated-video-test.json"
 var audioValidAndInvalidFileName = "auto-generated-audio-test.json"
 
-var filenameDataMapping: [String:String] = [
+var filenameDataMapping: [String: String] = [
     allTypesValidfilename: allTypesValid,
     documentValidAndInvalidFileName: documentValidAndInvalid,
     imageValidAndInvalidFileName: imageValidAndInvalid,
     videoValidAndInvalidFileName: videoValidAndInvalid,
-    audioValidAndInvalidFileName: audioValidAndInvalid,
+    audioValidAndInvalidFileName: audioValidAndInvalid
 ]
 
-func writeAllToCurrentDirectory() throws{
-    for file in filenameDataMapping{
+func writeAllToCurrentDirectory() throws {
+    for file in filenameDataMapping {
         var current = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
         current.appendPathComponent(file.key)
         try file.value.write(to: current, atomically: true, encoding: String.Encoding.utf8)
     }
 }
 
-func removeAllFromCurrentDirectory() throws{
-    for file in filenameDataMapping{
+func removeAllFromCurrentDirectory() throws {
+    for file in filenameDataMapping {
         var current = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
         current.appendPathComponent(file.key)
         try FileManager.default.removeItem(at: current)

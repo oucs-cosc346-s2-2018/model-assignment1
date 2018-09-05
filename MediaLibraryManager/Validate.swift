@@ -20,15 +20,13 @@ import Foundation
 // the other option is a Builder class that we can give it one of those F structs
 // and it'll construct the appropriate type of object
 
-
 // the first step in validation is to transform the list of key/value pairs into
 // a set of Metadata instances
 
 // once we have those metadata instances, we can then look to see if we have
 // the correct metadata before we can construct the File
 
-
-enum MMValidationError: Error{
+enum MMValidationError: Error {
     case unimplementedValidation
     case unknownFileType
     case missingField(which: String)
@@ -36,43 +34,42 @@ enum MMValidationError: Error{
 
 class KeywordValidator {
     var keyword: String
-    init(keyword: String){
+    init(keyword: String) {
         self.keyword = keyword
     }
     func validate(data: [MMMetadata]) throws {
         var valid = false
-        for md in data{
-            if md.keyword == self.keyword {
-                valid = true
-            }
+        // swiftlint:disable:next identifier_name
+        for md in data where md.keyword == self.keyword {
+            valid = true
         }
-        if !valid{
+        if !valid {
             throw MMValidationError.missingField(which: self.keyword)
         }
     }
 }
 
-class ValidatorSuite{
-    var validators:[KeywordValidator]
-    
-    init(validators: [KeywordValidator]){
+class ValidatorSuite {
+    var validators: [KeywordValidator]
+
+    init(validators: [KeywordValidator]) {
         self.validators = validators
     }
-    
-    convenience init(){
+
+    convenience init() {
         self.init(validators: [])
     }
-    
-    func add(validator: KeywordValidator){
+
+    func add(validator: KeywordValidator) {
         self.validators.append(validator)
     }
-    
+
     func validate(data: [MMMetadata]) -> [MMValidationError] {
         var errors: [MMValidationError] = []
         for validator in validators {
-            do{
+            do {
                 try validator.validate(data: data)
-            }catch let error as MMValidationError{
+            } catch let error as MMValidationError {
                 errors.append(error)
             } catch {
                 print("\(error)")

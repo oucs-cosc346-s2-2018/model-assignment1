@@ -8,22 +8,21 @@
 
 import Foundation
 
-
-class Metadata: MMMetadata{
+class Metadata: MMMetadata {
     var keyword: String
     var value: String
-    
-    init(keyword: String, value: String){
+
+    init(keyword: String, value: String) {
         self.keyword = keyword
         self.value = value
     }
-    
+
     // I'm using this as a default value -- the empty metadata
-    convenience init(){
+    convenience init() {
         self.init(keyword: "", value: "")
     }
-    
-    var description: String{
+
+    var description: String {
         return "\(self.keyword): \(self.value)"
     }
 }
