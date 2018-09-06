@@ -32,6 +32,8 @@
 		D3A24228213502A30061C4F3 /* Validate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A24227213502A30061C4F3 /* Validate.swift */; };
 		D3A242292135405D0061C4F3 /* Validate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A24227213502A30061C4F3 /* Validate.swift */; };
 		D3CB3A9D20DB264200AF519E /* cli.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3CB3A9C20DB264200AF519E /* cli.swift */; };
+		D3F753202140F23D005C7C67 /* Index.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3F7531F2140F23D005C7C67 /* Index.swift */; };
+		D3F753212140F267005C7C67 /* Index.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3F7531F2140F23D005C7C67 /* Index.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -67,6 +69,7 @@
 		D3A242252134FDBD0061C4F3 /* ValidationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidationTests.swift; sourceTree = "<group>"; };
 		D3A24227213502A30061C4F3 /* Validate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Validate.swift; sourceTree = "<group>"; };
 		D3CB3A9C20DB264200AF519E /* cli.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cli.swift; sourceTree = "<group>"; };
+		D3F7531F2140F23D005C7C67 /* Index.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Index.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,6 +121,7 @@
 				D3A2421D2134B62C0061C4F3 /* test.json */,
 				D3A24227213502A30061C4F3 /* Validate.swift */,
 				D39C53222136464E001AD9DC /* Collection.swift */,
+				D3F7531F2140F23D005C7C67 /* Index.swift */,
 			);
 			path = MediaLibraryManager;
 			sourceTree = "<group>";
@@ -246,6 +250,7 @@
 				D3A242122133C0960061C4F3 /* IO.swift in Sources */,
 				D3CB3A9D20DB264200AF519E /* cli.swift in Sources */,
 				D3A241FC2133B2070061C4F3 /* File.swift in Sources */,
+				D3F753202140F23D005C7C67 /* Index.swift in Sources */,
 				D3A24228213502A30061C4F3 /* Validate.swift in Sources */,
 				D3161D2420D748F800EC97E8 /* main.swift in Sources */,
 				D3A241FA2133B1630061C4F3 /* Metadata.swift in Sources */,
@@ -258,6 +263,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D3F753212140F267005C7C67 /* Index.swift in Sources */,
 				D3A2421E2134B83C0061C4F3 /* commands.swift in Sources */,
 				D3A2421F2134B83C0061C4F3 /* protocols.swift in Sources */,
 				D3A242202134B83C0061C4F3 /* main.swift in Sources */,
