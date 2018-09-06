@@ -29,7 +29,7 @@ class File: MMFile {
     var metadata: [MMMetadata]
     var filename: String
     var path: String
-    
+
     var description: String {
         return "\(self.filename)"
     }
@@ -71,9 +71,7 @@ class File: MMFile {
     }
 
     func add(keyword: String, value: String) {
-        // swiftlint:disable:next identifier_name
-        let md = Metadata(keyword: keyword, value: value)
-        self.metadata.append(md)
+        self.metadata.append(Metadata(keyword: keyword, value: value))
     }
 
     func edit(keyword: String, value: String) {

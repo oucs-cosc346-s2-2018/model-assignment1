@@ -189,23 +189,23 @@ class AddMetadataCommand: MMCommand {
             throw MMCliError.invalidParameters
         }
 
-        let file = self.items[index]
+        //swiftlint:disable:next todo
+        //TODO: bad code smell!!
+        //swiftlint:disable:next force_cast
+        let file = self.items[index] as! File
 
         //swiftlint:disable:next todo
         //TODO: pairwise param traversal
         let keyword = params.remove(at: 0)
         let value = params.remove(at: 0)
-
-        //swiftlint:disable:next todo
-        //TODO: bad code smell!!
-        //swiftlint:disable:next force_cast
-        (file as! File).add(keyword: keyword, value: value)
+        
+        file.add(keyword: keyword, value: value)
 
         // this is necessary as we've made a copy of the file and modified it
         collection.replace(file: file)
 
         //swiftlint:disable:next todo
-        //TODO: this is inefficient
+        //TODO: this is inefficient and should be observed by the indexer
         collection.reindex()
     }
 }
@@ -233,27 +233,23 @@ class SetMetadataCommand: MMCommand {
             throw MMCliError.invalidParameters
         }
 
-        let file = self.items[index]
+        //swiftlint:disable:next todo
+        //TODO: bad code smell!!
+        //swiftlint:disable:next force_cast
+        let file = self.items[index] as! File
 
         //swiftlint:disable:next todo
         //TODO: pairwise param traversal
         let keyword = params.remove(at: 0)
         let value = params.remove(at: 0)
 
-        //swiftlint:disable:next todo
-        //TODO: bad code smell!!
-
-        //swiftlint:disable:next todo
-        //TODO: actually set the data
-
-        //swiftlint:disable:next force_cast
-        (file as! File).edit(keyword: keyword, value: value)
+        file.edit(keyword: keyword, value: value)
 
         // this is necessary as we've made a copy of the file and modified it
         collection.replace(file: file)
 
         //swiftlint:disable:next todo
-        //TODO: this is inefficient
+        //TODO: this is inefficient and should be observed by the indexer
         collection.reindex()
     }
 }
@@ -280,21 +276,21 @@ class DelMetadataCommand: MMCommand {
             throw MMCliError.invalidParameters
         }
 
-        var file = self.items[index]
+        //swiftlint:disable:next force_cast
+        let file = self.items[index] as! File
 
         //swiftlint:disable:next todo
         //TODO: pairwise param traversal
         let keyword = params.remove(at: 0)
         let value = params.remove(at: 0)
 
-        //swiftlint:disable:next force_cast
-        (file as! File).delete(keyword: keyword, value: value)
+        file.delete(keyword: keyword, value: value)
 
         // this is necessary as we've made a copy of the file and modified it
         collection.replace(file: file)
 
         //swiftlint:disable:next todo
-        //TODO: this is inefficient
+        //TODO: this is inefficient and should be observed by the indexer
         collection.reindex()
     }
 }
