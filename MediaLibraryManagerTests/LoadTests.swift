@@ -72,7 +72,7 @@ class LoadTests: XCTestCase {
         var current = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
         current.appendPathComponent(filename)
 
-        let loader = Importer()
+        let loader = JSONImporter()
         do {
             let result = try loader.read(filename: current.path)
             XCTAssert(result.count > 0, "Expected to read *some* data")
@@ -82,7 +82,7 @@ class LoadTests: XCTestCase {
     }
 
     func testFromWorkingDirectory() {
-        let loader = Importer()
+        let loader = JSONImporter()
         do {
             let result = try loader.read(filename: "./" + filename)
             XCTAssert(result.count > 0, "Expected to read *some* data")
@@ -92,7 +92,7 @@ class LoadTests: XCTestCase {
     }
 
     func testFromHomeDirectory() {
-        let loader = Importer()
+        let loader = JSONImporter()
         do {
             let result = try loader.read(filename: "~/" + filename)
             XCTAssert(result.count > 0, "Expected to read *some* data")
@@ -102,7 +102,7 @@ class LoadTests: XCTestCase {
     }
 
     func testAllFileTypes() {
-        let loader = Importer()
+        let loader = JSONImporter()
         do {
             let result = try loader.read(filename: alltypesFilename)
 

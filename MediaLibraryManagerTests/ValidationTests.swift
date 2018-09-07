@@ -38,7 +38,7 @@ class ValidationTests: XCTestCase {
     }
 
     func testDocument() {
-        let loader = Importer()
+        let loader = JSONImporter()
         do {
             _ = try loader.read(filename: documentValidAndInvalidFileName)
         } catch MMImportError.validationFailed(let errors) {
@@ -51,7 +51,7 @@ class ValidationTests: XCTestCase {
     }
 
     func testImage() {
-        let loader = Importer()
+        let loader = JSONImporter()
         do {
             _ = try loader.read(filename: imageValidAndInvalidFileName)
         } catch MMImportError.validationFailed(let errors) {
@@ -64,7 +64,7 @@ class ValidationTests: XCTestCase {
     }
 
     func testVideo() {
-        let loader = Importer()
+        let loader = JSONImporter()
         do {
             _ = try loader.read(filename: videoValidAndInvalidFileName)
         } catch MMImportError.validationFailed(let errors) {
@@ -77,7 +77,7 @@ class ValidationTests: XCTestCase {
     }
 
     func testAudio() {
-        let loader = Importer()
+        let loader = JSONImporter()
         do {
             _ = try loader.read(filename: audioValidAndInvalidFileName)
         } catch MMImportError.validationFailed(let errors) {

@@ -18,9 +18,9 @@ class SaveTests: XCTestCase {
                                     metadata: [creator],
                                     creator: creator)
         do {
-            try Exporter().write(filename: "test-export-single-document.json",
+            try JSONExporter().write(filename: "test-export-single-document.json",
                                  items: [document])
-            let data = try Importer().read(
+            let data = try JSONImporter().read(
                 filename: "test-export-single-document.json")
             XCTAssert(data.count == 1)
         } catch {
@@ -62,10 +62,10 @@ class SaveTests: XCTestCase {
                               runtime: runtime)
 
         do {
-            try Exporter().write(filename: "test-export-multiple-document.json",
+            try JSONExporter().write(filename: "test-export-multiple-document.json",
                                  items: [document, image, audio, video])
 
-            let data = try Importer().read(
+            let data = try JSONImporter().read(
                 filename: "test-export-multiple-document.json")
 
             XCTAssert(data.count == 4)

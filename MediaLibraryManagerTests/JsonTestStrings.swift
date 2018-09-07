@@ -173,6 +173,7 @@ let audioValidAndInvalid = """
 ]
 """
 
+var singleDocumentValidfilename = "auto-generated-single-document-test.json"
 var allTypesValidfilename = "auto-generated-all-types-test.json"
 var documentValidAndInvalidFileName = "auto-generated-document-test.json"
 var imageValidAndInvalidFileName = "auto-generated-image-test.json"
@@ -180,6 +181,7 @@ var videoValidAndInvalidFileName = "auto-generated-video-test.json"
 var audioValidAndInvalidFileName = "auto-generated-audio-test.json"
 
 var filenameDataMapping: [String: String] = [
+    singleDocumentValidfilename: singleDocumentValid,
     allTypesValidfilename: allTypesValid,
     documentValidAndInvalidFileName: documentValidAndInvalid,
     imageValidAndInvalidFileName: imageValidAndInvalid,
