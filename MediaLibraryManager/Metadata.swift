@@ -8,20 +8,26 @@
 
 import Foundation
 
+/// A keyword/value pair representing a metadatum about a file
 class Metadata: MMMetadata {
+
+    /// The keyword for the metadatum
     var keyword: String
+
+    /// The value for the metadatum
     var value: String
 
+    /// Create a new instance of a metadatum.
+    ///
+    /// - Parameters:
+    ///   - keyword: The keyword
+    ///   - value: The value
     init(keyword: String, value: String) {
         self.keyword = keyword
         self.value = value
     }
 
-    // I'm using this as a default value -- the empty metadata
-    convenience init() {
-        self.init(keyword: "", value: "")
-    }
-
+    /// Human readable description of this metadatum
     var description: String {
         return "\(self.keyword): \(self.value)"
     }

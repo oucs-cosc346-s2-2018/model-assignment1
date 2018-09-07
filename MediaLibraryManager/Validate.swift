@@ -8,41 +8,48 @@
 
 import Foundation
 
-// we have a set of business rules (e.g. must have creator, must have resolution)
-// these are dependent on the type we're constructing
-
-// also there should be a list of validators for each type of file
-//
-// I'd expect something like:
-//  hasCreator(metadata) && hasResolution(metadata)
-// to be checked before we can create the object instance
-
-// the other option is a Builder class that we can give it one of those F structs
-// and it'll construct the appropriate type of object
-
-// the first step in validation is to transform the list of key/value pairs into
-// a set of Metadata instances
-
-// once we have those metadata instances, we can then look to see if we have
-// the correct metadata before we can construct the File
-
+/// A list of possible validation errors.
+///
+/// - unknownFileType: The validation has encounted an unknown filetype
+/// - missingKeyword: Thrown if the keyword validator fails to find the keyword it's looking for
+/// - unknownError: Thrown if there are any other errors
 enum MMValidationError: Error {
-    case unimplementedValidation
     case unknownFileType
-    case missingField(which: String)
+    case missingKeyword(which: String)
+    case unknownError(which: Error)
 }
 
-class KeywordValidator: CustomStringConvertible {
+/// The generic validator protocol
+protocol Validator {
+    /// Perform the validators validation rules
+    ///
+    /// - Parameter data: the list of metadata to validate
+    /// - Throws: a MMValidationError if the validation fails
+    func validate(data: [MMMetadata]) throws
+}
+
+/// Validates a list of metadata looking through the keywords
+class KeywordValidator: Validator, CustomStringConvertible {
+
+    /// The keyword to look for
     var keyword: String
 
+    /// A human readable description of the object
     var description: String {
         return self.keyword
     }
 
+    /// Create a new instance
+    ///
+    /// - Parameter keyword: The keyword to look for
     init(keyword: String) {
         self.keyword = keyword
     }
 
+    /// Given a list of metadata, find the keyword. If it's not found, throw an error.
+    ///
+    /// - Parameter data: the list of metadata to look through
+    /// - Throws: missingKeyword if we fail to find the keyword in the list
     func validate(data: [MMMetadata]) throws {
         var valid = false
         // swiftlint:disable:next identifier_name
@@ -50,26 +57,28 @@ class KeywordValidator: CustomStringConvertible {
             valid = true
         }
         if !valid {
-            throw MMValidationError.missingField(which: self.keyword)
+            throw MMValidationError.missingKeyword(which: self.keyword)
         }
     }
 }
 
+/// Combines a set of validators into a validation suite
 class ValidatorSuite {
-    var validators: [KeywordValidator]
 
-    init(validators: [KeywordValidator]) {
-        self.validators = validators
-    }
+    /// The list of validators that we need to deal with.
+    var validators: [Validator] = []
 
-    convenience init() {
-        self.init(validators: [])
-    }
-
-    func add(validator: KeywordValidator) {
+    /// Add a validator into the list of validators
+    ///
+    /// - Parameter validator: the validator to add
+    func add(validator: Validator) {
         self.validators.append(validator)
     }
 
+    /// Performs the validation of the metadata
+    ///
+    /// - Parameter data: The metadata
+    /// - Returns: a (possibly empty) list of errors encountered
     func validate(data: [MMMetadata]) -> [MMValidationError] {
         var errors: [MMValidationError] = []
         for validator in validators {
@@ -78,7 +87,9 @@ class ValidatorSuite {
             } catch let error as MMValidationError {
                 errors.append(error)
             } catch {
-                print("\(error)")
+                // we're wrapping any other errors up as an instance of MMValidationError
+                // I don't think Swift allows you to specify the *type* of error thrown
+                errors.append(MMValidationError.unknownError(which: error))
             }
         }
         return errors

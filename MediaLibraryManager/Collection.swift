@@ -8,54 +8,101 @@
 
 import Foundation
 
-// we'll do the bare minimum to make this work
+extension MMFile {
+//
+//    static var requiredMetadata: Set<String> {
+//            return Set<String>()
+//    }
+//
+//    func isRequired(metadata: MMMetadata) -> Bool {
+//        return type(of: self).requiredMetadata.contains(metadata.keyword)
+//    }
+
+    /// Test to see if the metadata is associated with this file.
+    ///
+    /// - Parameter metadata: The item to test
+    /// - Returns: true iff the item is part of this file
+    func contains(metadata: MMMetadata) -> Bool {
+        //swiftlint:disable:next identifier_name
+        for md in self.metadata where
+                md.keyword == metadata.keyword &&
+                md.value == metadata.value {
+            return true
+        }
+        return false
+    }
+
+    /// Remove a metadata instance from this file.
+    ///
+    /// - Parameter metadata: the instance to remove
+    mutating func remove(metadata: MMMetadata) {
+        self.metadata = self.metadata.filter({
+            $0.keyword != metadata.keyword && $0.value != metadata.value})
+    }
+}
+/*
+extension File {
+    /// determines if the given metadata is required for the given instance of file.
+    ///
+    /// - Parameter metadata: the metadata to look for
+    /// - Returns: true if the metadata is required by the File
+    func isRequired(metadata: MMMetadata) -> Bool {
+        return type(of: self).requiredMetadata.contains(metadata.keyword)
+    }
+}*/
+
+/// Collection is composed of the indexer, importer, and exporter and is the main
+/// class. If we were to describe it using a design pattern, it's more like
+/// a facade, or part of a controller in the MVC pattern
 class Collection: MMCollection {
     private var importers: [String: MMFileImport]
     private var exporters: [String: MMFileExport]
-    private var files: [MMFile]
+    private var files: [File]
     private var index: Indexer
 
+    /// Creates a new (empty) collection
     init() {
         files = []
         // this allows us to add additional importers/exporters for
         // different serialisation types
-        importers = ["json": Importer()]
-        exporters = ["json": Exporter()]
+        importers = ["json": JSONImporter()]
+        exporters = ["json": JSONExporter()]
         index = Indexer()
     }
 
-    // brute force reindexing of the library
-    func reindex() {
-        self.index = Indexer()
-        self.index.add(files: self.files)
-    }
-
-    // this may need to update the index
+    /// Adds a file to the collection
+    ///
+    /// - Parameter file: The file to add to the collection
     func add(file: MMFile) {
-        self.files.append(file)
-        self.index.add(file: file)
-    }
-
-    // this is part of the index's functionality
-    func add(metadata: MMMetadata, file: MMFile) {
-        index.add(term: metadata.value, file: file)
-    }
-
-    func replace(file: MMFile) {
-        // this is done specifically to set the item at that position of the list.
-        // if we use a for x in y style loop, then we'd end up just manipulating a copy?
         //swiftlint:disable:next identifier_name
-        for i in 0..<self.files.count where self.files[i].filename == file.filename {
-            self.files[i] = file
-            break
+        if let f = file as? File {
+            self.files.append(f)
+            self.index.add(file: f)
         }
     }
 
-    // this requires both file and index
+    /// Updates the index with a specific metadata instance and a given file.
+    /// This method *does not* add the metadata to the file.
+    ///
+    /// - Parameters:
+    ///   - metadata: the item to add to the index
+    ///   - file: the file to add it to
+    func updateIndex(with metadata: MMMetadata, for file: MMFile) {
+        //swiftlint:disable:next identifier_name
+        if let f = file as? File {
+            index.add(term: metadata.value, file: f)
+        }
+    }
+
+    /// Obliterates a piece of metadata from the entire collection.
+    /// This method *does* remove the metadata from the file.
+    ///
+    /// - Parameter metadata: the metadata to remove from the collection
     func remove(metadata: MMMetadata) {
         if let list = index.search(term: metadata.value) {
             for var file in list {
-                if !file.isRequired(metadata: metadata) {
+                let data = file.metadata.filter({$0.keyword != metadata.keyword})
+                if type(of: file).validator.validate(data: data).count == 0 {
                     index.remove(term: metadata.value, f: file)
                     file.remove(metadata: metadata)
                 }
@@ -63,6 +110,10 @@ class Collection: MMCollection {
         }
     }
 
+    /// Find a given term in the collection's metadata
+    ///
+    /// - Parameter term: The needle to look for.
+    /// - Returns: A (possibly empty) list of files where the metadata contains that term
     func search(term: String) -> [MMFile] {
         if let result = index.search(term: term) {
             return result
@@ -70,6 +121,10 @@ class Collection: MMCollection {
         return []
     }
 
+    /// Finds the files with a given metadata value (and not keyword).
+    ///
+    /// - Parameter item: The value (as a metadata instance) to look for
+    /// - Returns: a (possibly empty) list of files that have the value
     func search(item: MMMetadata) -> [MMFile] {
         // we first reduce the number of files that we need to look through
         let result = self.search(term: item.value)
@@ -77,14 +132,25 @@ class Collection: MMCollection {
         return result.filter({$0.contains(metadata: item)})
     }
 
+    /// Accessor for the list of files in the collection.
+    ///
+    /// - Returns: a list of all the files in the collection
     func all() -> [MMFile] {
         return self.files
     }
 
+    /// A string representation of the collection (a string containing the
+    /// number of items).
     var description: String {
         return "Collection contains \(self.files.count) files."
     }
 
+    /// Read a file and import the items contained within.
+    /// At present, it'll only read from JSON files (we only have a JSON
+    /// importer at the moment), but it would be (relatively) trivial to add other
+    /// serialisations at a later date.
+    ///
+    /// - Parameter filename: The file to read from.
     func load(filename: String) {
         do {
             if let importer = importers["json"] {
@@ -100,6 +166,14 @@ class Collection: MMCollection {
         }
     }
 
+    /// Writes a list of metadata to the given file.
+    /// At present, it'll only write to JSON files (we only have a JSON
+    /// exporter at the moment), but it would be (relatively) trivial to add other
+    /// serialisations at a later date.
+    ///
+    /// - Parameters:
+    ///   - filename: The filename to write to.
+    ///   - list: The list of files to write.
     func save(filename: String, list: [MMFile]) {
         do {
             if let exporter = exporters["json"] {
@@ -112,7 +186,60 @@ class Collection: MMCollection {
         }
     }
 
+    /// Write the entire collection to a file.
+    ///
+    /// - Parameter filename: The filename to write to.
     func save(filename: String) {
         self.save(filename: filename, list: self.files)
+    }
+
+    /// Remove a piece of metadata associated with the given file.
+    ///
+    /// - Parameters:
+    ///   - file: The file to remove the data from
+    ///   - keyword: The metadata's keyword
+    ///   - value: The metadata's value
+    func delete(file: MMFile, keyword: String, value: String) {
+        //swiftlint:disable:next identifier_name
+        for var f in self.files where f.filename == file.filename {
+            f.delete(keyword: keyword, value: value)
+        }
+        //swiftlint:disable:next todo
+        //TODO: this is inefficient and should be observed by the indexer
+        index.reindex(files: self.files)
+    }
+
+    /// Change a piece of metadata associated with the given file.
+    ///
+    /// - Parameters:
+    ///   - file: The file to remove the data from
+    ///   - keyword: The metadata's keyword
+    ///   - value: The metadata's value
+    func set(file: File, keyword: String, value: String) {
+        //swiftlint:disable:next identifier_name
+        for var f in self.files where f.filename == file.filename {
+            f.edit(keyword: keyword, value: value)
+        }
+
+        //swiftlint:disable:next todo
+        //TODO: this is inefficient
+        index.reindex(files: self.files)
+    }
+
+    /// Add a piece of metadata to the given file.
+    ///
+    /// - Parameters:
+    ///   - file: The file to remove the data from
+    ///   - keyword: The metadata's keyword
+    ///   - value: The metadata's value
+    func add(file: File, keyword: String, value: String) {
+        //swiftlint:disable:next identifier_name
+        for var f in self.files where f.filename == file.filename {
+            f.add(keyword: keyword, value: value)
+        }
+
+        //swiftlint:disable:next todo
+        //TODO: this is inefficient and should be observed by the indexer
+        index.reindex(files: self.files)
     }
 }

@@ -113,14 +113,14 @@ protocol MMCommand {
 // command needed to have previous result sets, then they *all* needed to know
 // about it.
 
-/// Handle unimplemented commands by throwing an exception when trying to
-/// execute this command.
-class UnimplementedCommand: MMCommand {
-    var results: MMResultSet?
-    func execute() throws {
-        throw MMCliError.unimplementedCommand
-    }
-}
+///// Handle unimplemented commands by throwing an exception when trying to
+///// execute this command.
+//class UnimplementedCommand: MMCommand {
+//    var results: MMResultSet?
+//    func execute() throws {
+//        throw MMCliError.unimplementedCommand
+//    }
+//}
 
 /// Handle the help command.
 class HelpCommand: MMCommand {
@@ -189,6 +189,10 @@ class AddMetadataCommand: MMCommand {
             throw MMCliError.invalidParameters
         }
 
+        guard index >= 0 && index < self.items.count else {
+            throw MMCliError.invalidParameters
+        }
+
         //swiftlint:disable:next todo
         //TODO: bad code smell!!
         //swiftlint:disable:next force_cast
@@ -198,21 +202,14 @@ class AddMetadataCommand: MMCommand {
         //TODO: pairwise param traversal
         let keyword = params.remove(at: 0)
         let value = params.remove(at: 0)
-        
-        file.add(keyword: keyword, value: value)
 
-        // this is necessary as we've made a copy of the file and modified it
-        collection.replace(file: file)
-
-        //swiftlint:disable:next todo
-        //TODO: this is inefficient and should be observed by the indexer
-        collection.reindex()
+        collection.add(file: file, keyword: keyword, value: value)
     }
 }
 
 class SetMetadataCommand: MMCommand {
     var results: MMResultSet?
-    private var params: [String]
+    var params: [String]
     private var collection: Collection
     private var items: [MMFile]
 
@@ -233,6 +230,9 @@ class SetMetadataCommand: MMCommand {
             throw MMCliError.invalidParameters
         }
 
+        guard index >= 0 && index < self.items.count else {
+            throw MMCliError.invalidParameters
+        }
         //swiftlint:disable:next todo
         //TODO: bad code smell!!
         //swiftlint:disable:next force_cast
@@ -243,20 +243,13 @@ class SetMetadataCommand: MMCommand {
         let keyword = params.remove(at: 0)
         let value = params.remove(at: 0)
 
-        file.edit(keyword: keyword, value: value)
-
-        // this is necessary as we've made a copy of the file and modified it
-        collection.replace(file: file)
-
-        //swiftlint:disable:next todo
-        //TODO: this is inefficient and should be observed by the indexer
-        collection.reindex()
+        collection.set(file: file, keyword: keyword, value: value)
     }
 }
 
 class DelMetadataCommand: MMCommand {
     var results: MMResultSet?
-    private var params: [String]
+    var params: [String]
     private var collection: Collection
     private var items: [MMFile]
 
@@ -276,6 +269,10 @@ class DelMetadataCommand: MMCommand {
             throw MMCliError.invalidParameters
         }
 
+        guard index >= 0 && index < self.items.count else {
+            throw MMCliError.invalidParameters
+        }
+
         //swiftlint:disable:next force_cast
         let file = self.items[index] as! File
 
@@ -284,14 +281,7 @@ class DelMetadataCommand: MMCommand {
         let keyword = params.remove(at: 0)
         let value = params.remove(at: 0)
 
-        file.delete(keyword: keyword, value: value)
-
-        // this is necessary as we've made a copy of the file and modified it
-        collection.replace(file: file)
-
-        //swiftlint:disable:next todo
-        //TODO: this is inefficient and should be observed by the indexer
-        collection.reindex()
+        collection.delete(file: file, keyword: keyword, value: value)
     }
 }
 
@@ -347,7 +337,6 @@ class SaveCommand: MMCommand {
     }
 
     func execute() throws {
-
         guard self.filename.count == 1 else {
             throw MMCliError.invalidParameters
         }

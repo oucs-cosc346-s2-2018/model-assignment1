@@ -69,7 +69,7 @@ protocol MMCollection: CustomStringConvertible {
     ///
     /// - Parameters:
     /// - metadata: The item to add to the collection
-    func add(metadata: MMMetadata, file: MMFile)
+    func updateIndex(with metadata: MMMetadata, for file: MMFile)
 
     ///
     /// Removes a specific instance of a metadata from the collection
