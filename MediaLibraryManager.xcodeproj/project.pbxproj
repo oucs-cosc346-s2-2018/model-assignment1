@@ -34,6 +34,7 @@
 		D3CB3A9D20DB264200AF519E /* cli.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3CB3A9C20DB264200AF519E /* cli.swift */; };
 		D3F753202140F23D005C7C67 /* Index.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3F7531F2140F23D005C7C67 /* Index.swift */; };
 		D3F753212140F267005C7C67 /* Index.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3F7531F2140F23D005C7C67 /* Index.swift */; };
+		D3F75323214240CE005C7C67 /* IndexerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3F75322214240CE005C7C67 /* IndexerTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -70,6 +71,7 @@
 		D3A24227213502A30061C4F3 /* Validate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Validate.swift; sourceTree = "<group>"; };
 		D3CB3A9C20DB264200AF519E /* cli.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cli.swift; sourceTree = "<group>"; };
 		D3F7531F2140F23D005C7C67 /* Index.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Index.swift; sourceTree = "<group>"; };
+		D3F75322214240CE005C7C67 /* IndexerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexerTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -137,6 +139,7 @@
 				D39C532021364636001AD9DC /* CollectionTests.swift */,
 				D39C532521364CC8001AD9DC /* JsonTestStrings.swift */,
 				D39C536E213CCA32001AD9DC /* CommandTests.swift */,
+				D3F75322214240CE005C7C67 /* IndexerTests.swift */,
 			);
 			path = MediaLibraryManagerTests;
 			sourceTree = "<group>";
@@ -278,6 +281,7 @@
 				D3A242232134B83C0061C4F3 /* File.swift in Sources */,
 				D39C5371213CD6C1001AD9DC /* SaveTests.swift in Sources */,
 				D3A242242134B83C0061C4F3 /* IO.swift in Sources */,
+				D3F75323214240CE005C7C67 /* IndexerTests.swift in Sources */,
 				D3A241EE2133B0720061C4F3 /* MediaLibraryManagerTests.swift in Sources */,
 				D3A241F82133B0D90061C4F3 /* LoadTests.swift in Sources */,
 			);
