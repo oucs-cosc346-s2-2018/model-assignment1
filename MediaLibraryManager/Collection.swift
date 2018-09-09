@@ -9,27 +9,16 @@
 import Foundation
 
 extension MMFile {
-//
-//    static var requiredMetadata: Set<String> {
-//            return Set<String>()
-//    }
-//
-//    func isRequired(metadata: MMMetadata) -> Bool {
-//        return type(of: self).requiredMetadata.contains(metadata.keyword)
-//    }
 
     /// Test to see if the metadata is associated with this file.
     ///
     /// - Parameter metadata: The item to test
     /// - Returns: true iff the item is part of this file
     func contains(metadata: MMMetadata) -> Bool {
-        //swiftlint:disable:next identifier_name
-        for md in self.metadata where
-                md.keyword == metadata.keyword &&
-                md.value == metadata.value {
-            return true
-        }
-        return false
+        return self.metadata.contains(where: {
+                $0.keyword == metadata.keyword &&
+                $0.value == metadata.value
+        })
     }
 
     /// Remove a metadata instance from this file.
@@ -37,7 +26,9 @@ extension MMFile {
     /// - Parameter metadata: the instance to remove
     mutating func remove(metadata: MMMetadata) {
         self.metadata = self.metadata.filter({
-            $0.keyword != metadata.keyword && $0.value != metadata.value})
+                $0.keyword != metadata.keyword &&
+                $0.value != metadata.value
+        })
     }
 }
 /*
@@ -99,13 +90,12 @@ class Collection: MMCollection {
     ///
     /// - Parameter metadata: the metadata to remove from the collection
     func remove(metadata: MMMetadata) {
-        if let list = index.search(term: metadata.value) {
-            for var file in list {
-                let data = file.metadata.filter({$0.keyword != metadata.keyword})
-                if type(of: file).validator.validate(data: data).count == 0 {
-                    index.remove(term: metadata.value, f: file)
-                    file.remove(metadata: metadata)
-                }
+        let list = index.search(term: metadata.value)
+        for var file in list {
+            let data = file.metadata.filter({$0.keyword != metadata.keyword})
+            if type(of: file).validator.validate(data: data).count == 0 {
+                index.remove(term: metadata.value, file: file)
+                file.remove(metadata: metadata)
             }
         }
     }
@@ -115,10 +105,7 @@ class Collection: MMCollection {
     /// - Parameter term: The needle to look for.
     /// - Returns: A (possibly empty) list of files where the metadata contains that term
     func search(term: String) -> [MMFile] {
-        if let result = index.search(term: term) {
-            return result
-        }
-        return []
+        return index.search(term: term)
     }
 
     /// Finds the files with a given metadata value (and not keyword).
@@ -201,7 +188,7 @@ class Collection: MMCollection {
     ///   - value: The metadata's value
     func delete(file: MMFile, keyword: String, value: String) {
         //swiftlint:disable:next identifier_name
-        for var f in self.files where f.filename == file.filename {
+        for var f in self.files where f == file {
             f.delete(keyword: keyword, value: value)
         }
         //swiftlint:disable:next todo
@@ -215,9 +202,9 @@ class Collection: MMCollection {
     ///   - file: The file to remove the data from
     ///   - keyword: The metadata's keyword
     ///   - value: The metadata's value
-    func set(file: File, keyword: String, value: String) {
+    func set(file: MMFile, keyword: String, value: String) {
         //swiftlint:disable:next identifier_name
-        for var f in self.files where f.filename == file.filename {
+        for var f in self.files where f == file {
             f.edit(keyword: keyword, value: value)
         }
 
@@ -232,9 +219,9 @@ class Collection: MMCollection {
     ///   - file: The file to remove the data from
     ///   - keyword: The metadata's keyword
     ///   - value: The metadata's value
-    func add(file: File, keyword: String, value: String) {
+    func add(file: MMFile, keyword: String, value: String) {
         //swiftlint:disable:next identifier_name
-        for var f in self.files where f.filename == file.filename {
+        for var f in self.files where f == file {
             f.add(keyword: keyword, value: value)
         }
 

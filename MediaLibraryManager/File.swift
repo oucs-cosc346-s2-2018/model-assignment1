@@ -56,6 +56,19 @@ extension MMFile {
     }
 }
 
+extension MMFile {
+    /// Two files are equal if their paths are the same
+    ///
+    /// - Parameters:
+    ///   - lhs: the left hand side of the equals operation
+    ///   - rhs: the right hand side of the equals operation
+    /// - Returns: True iff the two files have the same path
+    // we need this as sometimes we compare an MMFile with another MMFile
+    static func == (lhs: MMFile, rhs: MMFile) -> Bool {
+        return lhs.fullpath == rhs.fullpath
+    }
+}
+
 /// The object at the root of the File type hierarchy. All file types
 /// should extend this one.
 class File: MMFile {
@@ -87,6 +100,27 @@ class File: MMFile {
         self.metadata = metadata
     }
 
+    /// Two files are equal if their paths are the same
+    ///
+    /// - Parameters:
+    ///   - lhs: the left hand side of the equals operation
+    ///   - rhs: the right hand side of the equals operation
+    /// - Returns: True iff the two files have the same path
+    static func == (lhs: File, rhs: File) -> Bool {
+        return lhs.fullpath == rhs.fullpath
+    }
+
+    /// Two files are equal if their paths are the same
+    ///
+    /// - Parameters:
+    ///   - lhs: the left hand side of the equals operation
+    ///   - rhs: the right hand side of the equals operation
+    /// - Returns: True iff the two files have the same path
+    // we need this as sometimes we compare a File with an MMFile
+    static func == (lhs: File, rhs: MMFile) -> Bool {
+        return lhs.fullpath == rhs.fullpath
+    }
+
     /// The set of required metadata keys for the particular file
     class var requiredMetadata: Set<String> {
         return Set<String>()
@@ -101,20 +135,6 @@ class File: MMFile {
         }
         return result
     }
-
-//    /// Finds the list of required metadata items in the file.
-//    ///
-//    /// - Parameter from: the list of metadata to look through
-//    /// - Returns: A dictionary mapping the required keyword to the metadata instance
-//    class func extractRequiredMetadata(from metadata: [MMMetadata]) -> [String: MMMetadata] {
-//        var result: [String: MMMetadata] = [:]
-//        for item in metadata {
-//            if self.requiredMetadata.contains(item.keyword) {
-//                result[item.keyword] = item
-//            }
-//        }
-//        return result
-//    }
 }
 
 // I'm going to be lazy and skip the comments for the following classes.
