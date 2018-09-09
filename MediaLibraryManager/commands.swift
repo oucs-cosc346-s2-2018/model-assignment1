@@ -193,10 +193,7 @@ class AddMetadataCommand: MMCommand {
             throw MMCliError.invalidParameters
         }
 
-        //swiftlint:disable:next todo
-        //TODO: bad code smell!!
-        //swiftlint:disable:next force_cast
-        let file = self.items[index] as! File
+        let file = self.items[index]
 
         //swiftlint:disable:next todo
         //TODO: pairwise param traversal
@@ -233,11 +230,8 @@ class SetMetadataCommand: MMCommand {
         guard index >= 0 && index < self.items.count else {
             throw MMCliError.invalidParameters
         }
-        //swiftlint:disable:next todo
-        //TODO: bad code smell!!
-        //swiftlint:disable:next force_cast
-        let file = self.items[index] as! File
 
+        let file = self.items[index]
         //swiftlint:disable:next todo
         //TODO: pairwise param traversal
         let keyword = params.remove(at: 0)
@@ -273,8 +267,7 @@ class DelMetadataCommand: MMCommand {
             throw MMCliError.invalidParameters
         }
 
-        //swiftlint:disable:next force_cast
-        let file = self.items[index] as! File
+        let file = self.items[index]
 
         //swiftlint:disable:next todo
         //TODO: pairwise param traversal
