@@ -31,16 +31,6 @@ extension MMFile {
         })
     }
 }
-/*
-extension File {
-    /// determines if the given metadata is required for the given instance of file.
-    ///
-    /// - Parameter metadata: the metadata to look for
-    /// - Returns: true if the metadata is required by the File
-    func isRequired(metadata: MMMetadata) -> Bool {
-        return type(of: self).requiredMetadata.contains(metadata.keyword)
-    }
-}*/
 
 /// Collection is composed of the indexer, importer, and exporter and is the main
 /// class. If we were to describe it using a design pattern, it's more like

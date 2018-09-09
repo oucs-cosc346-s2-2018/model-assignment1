@@ -151,6 +151,7 @@ class MediaLibraryManagerTests: XCTestCase {
             SaveCommand(collection: collection, filename: ["testing-data.json"], items: collection.all())
         )
 
+        //swiftlint:disable:next identifier_name
         let c2: Collection = Collection()
         _ = executeCommand(LoadCommand(
             collection: c2,
