@@ -14,10 +14,32 @@
 ## Overview
 
 This repository contains a sample solution to the first assignment. There are a
-couple of different ways to get this working with your assignment 2 repos.
-
-If you feel that you want to fix any problems with the code feel free to do so,
+couple of different ways to get this working with your assignment 2 repos. If
+you feel that you want to fix any problems with the code feel free to do so,
 but keep in mind that it's not really the point of the second assignment.
+
+I've given a brief overview of the different classes I've created.
+
+The Importer is where a lot of the work is done. It is responsible for creating
+the instances of the File objects (on per type), as well as performing various
+checks to make sure that the file being read in exists and is valid.
+
+Once the importer has finished loading, the resulting file list is returned to
+the collection. The collection is responsible for managing the interaction
+between the different components. The file list is then given to the indexer
+which adds the terms to its inverted index.
+
+To list the files in the collection, the collection passes the search request
+to the indexer and returns the search results.
+
+The add/set/del metadata happen via the collection. To add, the term/file are
+simpley added to the indexer and an entry for the metadata is added to the
+file. To delete, the term/file are removed from the indexer and the associated
+entry is removed from that file's list of metadata. An edit is a remove
+followed by an add.
+
+To save, the various different objects are serialised to a struct (mirroring
+the JSON file format) and then written to the file.
 
 ### Option 1
 
